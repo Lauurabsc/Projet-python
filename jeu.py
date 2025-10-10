@@ -7,3 +7,9 @@
 # git push 
 
 # Pour charger les modifications : git pull dans le terminal
+
+# Pour le créateur du fichier : Ajouter un nouveau fichier :   git add .
+# Affichage du message : git commit -m "Ajout du fichier"
+# git push -u origin main 
+
+# Pour charger : git pull
