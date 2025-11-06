@@ -31,7 +31,7 @@ class Porte :
         La difficulté (probabilité de verrous) augmente avec le numéro de
         la rangée, en suivant les règles du projet :
         - Rangée 0 : Toujours niveau 0.
-        - Rangée 8 : Toujours niveau 2.
+        - Rangée 8 : Toujours niveau 2. 
         - Rangées 1-7 : Probabilité progressive basée sur un tirage.
 
         :param row: (int) Le numéro de la rangée (0-8) où la porte se situe.
