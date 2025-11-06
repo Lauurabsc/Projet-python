@@ -36,7 +36,7 @@ class Piece :
 
         # Charge l'image de la pièce
         self.image_surface = pygame.image.load(image_path)
-        self.image_surface = pygame.transform.scale(self.image_surface, (taille_case, taille_case))
+        self.image_surface = pygame.transform.scale(self.image_surface, (TAILLE_CASE, TAILLE_CASE))
 
         # Gère la position en PIXELS de la pièce sur l'écran
 
