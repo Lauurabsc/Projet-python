@@ -7,14 +7,17 @@ class Porte :
     Chaque porte possède un niveau de verrouillage qui détermine
     si le joueur peut la franchir et si cela nécessite une clé.
     """
-    def __init__(self, verouillage=0): 
+    def __init__(self, row, force_unlocked): 
         """
         Initialise une nouvelle instance de Porte.
 
         :param verouillage: (int, optionnel) Le niveau de verrouillage initial.
                             0 = déverrouillée (défaut).
         """
-        self.niveau_verouillage = verouillage
+        if force_unlocked:
+            self.niveau_verouillage = 0
+        else:
+            self.verouillage_aleatoire(row)
 
     def est_verouillee(self): 
         """
