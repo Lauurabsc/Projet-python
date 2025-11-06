@@ -1,6 +1,8 @@
 import pygame
 from ..porte import Porte
 
+TAILLE_CASE = 70
+
 class Piece : 
     """
         Classe de base pour toute les pièces du manoir pour ses caractéristiques et son affichage.
