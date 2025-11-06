@@ -14,14 +14,14 @@ class Jeu:
     def __init__(self):
         """
         Constructeur de la classe Jeu.
-        Initialise la fenêtre, le titre du jeu et les variables de contrôle.
+        Initialise la fenêtre, le titre du jeu et les variables de contrôle
         """
         # Initialisation de pygame (affichage, clavier, etc.)
         pygame.init()
 
         # Dimensions de la fenêtre exprimées en pixels
-        self.LARGEUR = 500
-        self.HAUTEUR = 900
+        self.LARGEUR = 350
+        self.HAUTEUR = 630
 
         # Création de la fenêtre du jeu
         self.fenetre = pygame.display.set_mode((self.LARGEUR, self.HAUTEUR))
@@ -35,7 +35,7 @@ class Jeu:
 
     def boucle_principale(self):
         """
-        Boucle principale du jeu.
+        Boucle principale du jeu
         
         Elle tourne tant que la variable "en_cours" est vraie.
         À chaque itération :
