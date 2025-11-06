@@ -1,11 +1,11 @@
-from piece import Piece
-from porte import Porte
+from .piece import Piece
+from ..porte import Porte
 
 class EntranceHall(Piece): 
 
     """Pièce de départ"""
 
-    def __init(self, row = 0): 
+    def __init__(self, row = 0): 
 
         config = {
             "nord": True,
@@ -18,7 +18,8 @@ class EntranceHall(Piece):
             nom="Entrance Hall",
             row=row,
             portes_config=config,
-            cost_gemmes=0,
+            image_path="images/Entrance_Hall.png",
+            gemmes=0,
             rarete=0
         )
 
