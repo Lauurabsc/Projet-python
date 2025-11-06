@@ -1,5 +1,6 @@
 # Importation des bibliothèques
 import pygame
+from manoir import Manoir
 
 class Jeu:
     """
@@ -9,6 +10,7 @@ class Jeu:
     - l'initialisation de Pygame,
     - la création de la fenêtre d'affichage,
     - la boucle principale du jeu (gestion des événements et rafraîchissement de l'écran).
+    - l'affichage du manoir
     """
 
     def __init__(self):
@@ -28,8 +30,11 @@ class Jeu:
         # Titre de la fenêtre 
         pygame.display.set_caption("Blue Prince - Version IPS")
 
+        # Création du manoir
+        self.manoir = Manoir()
+
         # Contrôle de la boucle de jeu
-        self.en_cours = True # la boucle est active
+        self.en_cours = True # La boucle est active
 
         self.clock = pygame.time.Clock()  # Régule le nombre d'images par seconde
 
@@ -52,6 +57,9 @@ class Jeu:
 
             # Couleur de fond = noir - accueille la grille, le joueur, etc.
             self.fenetre.fill((0, 0, 0))
+
+            # Dessin des cases composant la grille
+            self.manoir.dessin_case(self.fenetre)
 
             # A COMPLETER
 
