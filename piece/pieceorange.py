@@ -12,7 +12,7 @@ class Hallway(Piece):
         super().__init__(
             nom="Hallway",
             row=row,
-            portes_config=config,
+            porte_config=config,
             image_path="images/Hallway.png", 
             gemmes=0,
             rarete=1, 
@@ -35,7 +35,7 @@ class SecretPassage(Piece):
         super().__init__(
             nom="Secret Passage",
             row=row,
-            portes_config=config,
+            porte_config=config,
             image_path="images/Secret_Passage.png", # Supposition
             gemmes=0,
             rarete=2, 
@@ -64,7 +64,7 @@ class Foyer(Piece):
         super().__init__(
             nom="Foyer",
             row=row,
-            portes_config=config,
+            porte_config=config,
             image_path="images/Foyer.png", 
             gemmes=1, 
             rarete=3,
@@ -82,7 +82,7 @@ class Foyer(Piece):
         """
 
         if "effets_actifs" not in joueur : 
-            joueur.effet_actif : {}
+            joueur.effet_actifs = {}
         joueur.effet_actifs["deverouillage_foyer"] = True
 
         # Parcourt la grille pour dévérouiller les pièces oranges 
@@ -90,7 +90,7 @@ class Foyer(Piece):
             for piece in r : 
                 if piece and piece.couleur == "orange": 
                     print(f"Déverrouillage des portes de {piece.nom}")
-                    for porte in piece.porte.values(): 
+                    for porte in piece.portes.values(): 
                         if porte is not None : 
                             porte.niveau_verouillage = 0 
 
@@ -100,7 +100,7 @@ class GreatHall(Piece):
     Un grand couloir dont les portes sont verouillées sauf si le joueur possède un Foyer. 
     """
 
-    def __init(self, row, porte_entree):
+    def __init__(self, row, porte_entree):
         config = {"nord": True, "sud": True, "est": True, "ouest": True}
 
         # Porte où le joueur est entrée pour ne pas la verouiller
@@ -109,7 +109,7 @@ class GreatHall(Piece):
         super().__init__(
             nom="Great Hall",
             row=row,
-            portes_config=config,
+            porte_config=config,
             image_path="images/Great_Hall.png",
             gemmes=1, 
             rarete=3, 
@@ -136,12 +136,12 @@ class GreatHall(Piece):
             for porte in self.portes.values(): 
                 if porte is not None: 
                     porte.niveau_verouillage = 0
-                else : 
-                    for direction, porte in self.portes.items(): 
-                        if porte is not None : 
-                            if direction == self.porte_entree_direction: 
-                                porte.niveau_verouillage = 0 
-                            else : 
-                                porte.niveau_verouillage = 1
+        else : 
+            for direction, porte in self.portes.items(): 
+                if porte is not None : 
+                    if direction == self.porte_entree_direction: 
+                        porte.niveau_verouillage = 0 
+                    else : 
+                        porte.niveau_verouillage = 1
 
 
