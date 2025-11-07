@@ -1,5 +1,5 @@
-from .piece import Piece
-from ..porte import Porte
+from piece.piece import Piece
+from porte import Porte
 
 class EntranceHall(Piece): 
 
@@ -18,7 +18,8 @@ class EntranceHall(Piece):
             nom="Entrance Hall",
             row=row,
             porte_config=config,
-            image_path="images/Entrance_Hall.png",
+
+            image_path="Images_Blue_Prince/Images/Rooms/Entrance_Hall.png",
             gemmes=0,
             rarete=0, 
             objets = None, 
