@@ -11,7 +11,7 @@ class Bedrooms(Piece):
         super().__init__(
             nom="Bedrooms",
             row=row,
-            portes_config=config,
+            porte_config=config,
             image_path="images/Bedrooms.png",
             rarete=1,
             couleur="violette"
@@ -33,7 +33,7 @@ class GuestBedroom(Piece):
         super().__init__(
             nom="Guest Bedroom",
             row=row,
-            portes_config=config,
+            porte_config=config,
             image_path="images/Guest_Bedroom.png",
             rarete=1,
             couleur="violette" 
@@ -55,7 +55,7 @@ class ServantsQuarters(Piece):
         super().__init__(
             nom="Servant's Quarters",
             row=row,
-            portes_config=config,
+            porte_config=config,
             image_path="images/Servants_Quarters.png",
             rarete=2,
             objets=["2_des", "1_gemme", "detecteur_metaux", "pelle"],
@@ -69,7 +69,7 @@ class ServantsQuarters(Piece):
         """
         count_chambres = 0
         
-        for r in jeu.grille:
+        for r in jeu.manoir.grille:
             for piece in r:
                 if piece and piece.couleur == "violette":
                     count_chambres += 1
@@ -92,7 +92,7 @@ class MasterBedroom(Piece):
         super().__init__(
             nom="Master Bedroom",
             row=row,
-            portes_config=config,
+            porte_config=config,
             rarete=3, 
             condition_placement="niveaux_superieurs",
             image_path="images/Master_Bedroom.png",
