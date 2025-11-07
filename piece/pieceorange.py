@@ -16,7 +16,7 @@ class Hallway(Piece):
             image_path="images/Hallway.png", 
             gemmes=0,
             rarete=1, 
-            objet=None,
+            objets=None,
             effet_special=None,
             condition_placement=None,
             couleur="orange"
@@ -39,7 +39,7 @@ class SecretPassage(Piece):
             image_path="images/Secret_Passage.png", # Supposition
             gemmes=0,
             rarete=2, 
-            objet=None,
+            objets=None,
             effet_special="Déclenche un draft de couleur spécial",
             condition_placement=None,
             couleur="orange"
@@ -68,7 +68,7 @@ class Foyer(Piece):
             image_path="images/Foyer.png", 
             gemmes=1, 
             rarete=3,
-            objet=None,
+            objets=None,
             effet_special="Déverrouille toutes les portes des couloirs",
             condition_placement=None,
             couleur="orange"
@@ -86,7 +86,7 @@ class Foyer(Piece):
         joueur.effet_actifs["deverouillage_foyer"] = True
 
         # Parcourt la grille pour dévérouiller les pièces oranges 
-        for r in jeu.grille : 
+        for r in jeu.manoir.grille : 
             for piece in r : 
                 if piece and piece.couleur == "orange": 
                     print(f"Déverrouillage des portes de {piece.nom}")
@@ -113,19 +113,19 @@ class GreatHall(Piece):
             image_path="images/Great_Hall.png",
             gemmes=1, 
             rarete=3, 
-            objet=None,
+            objets=None,
             effet_special="Portes verrouillées sans Foyer",
             condition_placement=None,
             couleur="orange"
         )
 
-    def on_discover(self, joueur, jeu) : 
+    def on_discover(self, joueur, jeu, col, row) : 
         """
         Effet activé à la pose d
         Vérifie si le joueur à l'effet "Foyer". 
         """
 
-        super().on_discover(joueur, jeu)
+        super().on_discover(joueur, jeu, col, row)
 
         # Verification si le joueur a l'effet du Foyer
 
