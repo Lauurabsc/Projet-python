@@ -62,11 +62,12 @@ class ServantsQuarters(Piece):
             couleur="violette" 
         )
     
-    def on_discover(self, joueur, jeu):
+    def on_discover(self, joueur, jeu, col, row):
         """ 
         Effet activé à la POSE de la pièce.
         On compte combien de pièces violettes sont déjà sur la grille.
         """
+        super().on_discover(joueur, jeu, col, row)
         count_chambres = 0
         
         for r in jeu.manoir.grille:
@@ -79,6 +80,8 @@ class ServantsQuarters(Piece):
         
         if cles_a_donner > 0:
             joueur.inventaire["cles"] += cles_a_donner
+
+        
 
 class MasterBedroom(Piece): 
     """Pièce 'Master Bedroom
