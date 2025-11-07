@@ -81,7 +81,7 @@ class Foyer(Piece):
         2. Déverouille tous les couloirs déjà posés
         """
 
-        if "effets_actifs" not in joueur : 
+        if not hasattr(joueur, "effet_actifs"): 
             joueur.effet_actifs = {}
         joueur.effet_actifs["deverouillage_foyer"] = True
 
@@ -129,7 +129,10 @@ class GreatHall(Piece):
 
         # Verification si le joueur a l'effet du Foyer
 
-        a_le_foyer = joueur.effet_actifs.get("deverouillage_foyer", False)
+        if hasattr(joueur, "effet_actifs"):
+            a_le_foyer = joueur.effet_actifs.get("deverouillage_foyer", False)
+        else:
+            a_le_foyer = False
 
         if a_le_foyer :
 
