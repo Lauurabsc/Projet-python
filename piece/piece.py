@@ -7,19 +7,19 @@ class Piece :
     """
         Classe de base pour toute les pièces du manoir pour ses caractéristiques et son affichage.
     """
-    def __init__(self, nom, row, porte_config, gemmes, rarete, image_path, objet, effet_special, condition_placement, couleur): 
+    def __init__(self, nom, row, porte_config, image_path, gemmes=0, rarete=1, objets=None, effet_special=None, condition_placement=None, couleur=None): 
 
         self.nom = nom
         self.gemmes = gemmes
-        self.objets = objet
+        self.objets = objets if objets is not None else []
         self.effet_special = effet_special
         self.rarete = rarete
         self.condition_placement = condition_placement
         self.couleur = couleur 
-        self.image_path= image_path
+        self.image_path = image_path
 
 
-        self.position =(None, row)
+        self.position =(None, None)
         self.est_decouverte = False
 
         # Creation des portes
@@ -41,6 +41,15 @@ class Piece :
         # Gère la position en PIXELS de la pièce sur l'écran
 
         self.rect = self.image_surface.get_rect()
+    
+    def set_position_pixels(self, col,row): 
+        """Met à jour la position logique (grille) et
+        la position d'affichage (pixels) de la pièce.
+        """
+        self.position = (col,row)
+        self.rect.x = col * TAILLE_CASE
+        self.rect.y = row * TAILLE_CASE
+
 
     def draw(self, fenetre): 
         """
@@ -49,7 +58,7 @@ class Piece :
         if self.est_decouverte : 
             fenetre.blit(self.image_surface, self.rect)
 
-    def on_enter(self, joueur):
+    def on_enter(self, joueur,jeu):
         """ Méthode appelée quand le joueur entre dans la pièce."""
         print(f"Le joueur entre dans : {self.nom}")
         pass 
@@ -58,8 +67,10 @@ class Piece :
         """Méthode appelée quand le joueur choisit cette pièce"""
         pass
 
-    def on_discover(self, joueur, jeu): 
+    def on_discover(self, joueur, jeu, col, row): 
         """Méthode appelée quand la pièce est placée sur la grille"""
-        pass
+        self.set_position_pixels(col,row)
+        self.est_decouverte = True
+        print(f"La pièce {self.nom} est découverte et placée en ({col}, {row})")
 
 
