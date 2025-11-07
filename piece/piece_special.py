@@ -21,7 +21,7 @@ class EntranceHall(Piece):
             image_path="images/Entrance_Hall.png",
             gemmes=0,
             rarete=0, 
-            objet = None, 
+            objets = None, 
             effet_special = None, 
             couleur = None
         )
@@ -52,7 +52,7 @@ class Antechamber(Piece):
             gemmes=0,       
             rarete=0,      
             image_path="images/Antechamber.png",
-            objet=None,
+            objets=None,
             effet_special="Portes scellées. Doit être déverrouillée.",
             condition_placement="Fixe au rang 9", 
             couleur=None
