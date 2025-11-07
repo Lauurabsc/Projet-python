@@ -17,7 +17,7 @@ class EntranceHall(Piece):
         super().__init__(
             nom="Entrance Hall",
             row=row,
-            portes_config=config,
+            porte_config=config,
             image_path="images/Entrance_Hall.png",
             gemmes=0,
             rarete=0, 
@@ -30,13 +30,13 @@ class EntranceHall(Piece):
             if porte is not None:
                 porte.niveau_verouillage = 0
 
-class Anterchamber(Piece): 
+class Antechamber(Piece): 
     """Pièce 'Anterchamber"
 
     Pièce fixe au Rang 9. Toutes les portes sont scellées.
     """
 
-    def __init__(self, row = 9): 
+    def __init__(self, row = 8): 
 
         config = {
             "nord": True,
