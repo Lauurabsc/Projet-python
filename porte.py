@@ -7,7 +7,7 @@ class Porte :
     Chaque porte possède un niveau de verrouillage qui détermine
     si le joueur peut la franchir et si cela nécessite une clé.
     """
-    def __init__(self, row, force_unlocked): 
+    def __init__(self, row, force_unlocked= False): 
         """
         Initialise une nouvelle instance de Porte.
 
@@ -66,14 +66,14 @@ class Porte :
 
             # Si le dé tombe sur la première tranche --> vérouillé à double tour
             if tirage <= seuil_lvl_2 : 
-                self.niveau_deverouillage = 2
+                self.niveau_verouillage = 2
 
             # Si le dé tombe sur la tranche 2 : porte vérouillée
             elif tirage <= seuil_lvl_1 : 
-                self.niveau_deverouillage = 1
+                self.niveau_verouillage = 1
 
             #Si le dé n'est tombé sur aucune des deux tranches : porte dévérouillé
             else : 
-                self.niveau_deverouillage = 0
+                self.niveau_verouillage = 0
 
     
