@@ -2,13 +2,14 @@ from piece.piece import Piece
 from porte import Porte
 
 
+# Pièce Bedrooms
 class Bedrooms(Piece):
+
     """Pièce 'Bedrooms'
-    Effet : +2 pas en entrant
-    """
+    Effet : +2 pas en entrant"""
+    
     def __init__(self, row, porte_entree):
         config = {"nord": True, "sud": True, "est": True, "ouest": True}
-
 
         super().__init__(
             nom="Bedrooms",
@@ -19,18 +20,19 @@ class Bedrooms(Piece):
             couleur="violette"
         )
 
-
     def on_enter(self, joueur, jeu):
         """ Redéfinition de l'effet : +2 pas. """
         super().on_enter(joueur, jeu)
-        joueur.inventaire["pas"] += 2
+        joueur.inventaire.ajouter_pas(2)
 
 
+# Pièce GuestBedroom
 class GuestBedroom(Piece):
+
     """Pièce 'Guest Bedroom'
     Effet : +10 pas si elle est selectionnée
-    Sans issue
-    """
+    Sans issue"""
+
     def __init__(self, row, porte_entree):
         config = {"nord": False, "sud": False, "est": False, "ouest": False}
         config[porte_entree] = True
@@ -46,18 +48,18 @@ class GuestBedroom(Piece):
 
     def on_draft(self, joueur, jeu):
         """ Redéfinition de l'effet : +10 pas au choix. """
-        joueur.inventaire["pas"] += 10
-       
-class ServantsQuarters(Piece):
-    """Pièce 'Servants's Quarters'
-    Effet : Donne des clés en fonction du nombre de chambres déjà posées
-    """
+        joueur.inventaire.ajouter_pas(10)
 
+
+# Pièce ServantsQuarters      
+class ServantsQuarters(Piece):
+    
+    """Pièce 'Servants's Quarters'
+    Effet : Donne des clés en fonction du nombre de chambres déjà posées"""
 
     def __init__(self, row: int, porte_entree: str):
         config = {"nord": True, "sud": True, "est": True, "ouest": True}
         config[porte_entree] = True
-
 
         super().__init__(
             nom="Servant's Quarters",
@@ -86,22 +88,18 @@ class ServantsQuarters(Piece):
         cles_a_donner = min(cles_a_donner, 10)
        
         if cles_a_donner > 0:
-            joueur.inventaire["cles"] += cles_a_donner
+            joueur.inventaire.ajouter_cles(cles_a_donner)
 
 
-       
-
-
+# Pièce MasterBedroom
 class MasterBedroom(Piece):
-    """Pièce 'Master Bedroom
-    Rare, se trouve dans les niveaux supérieurs
-    """
 
+    """Pièce 'Master Bedroom
+    Rare, se trouve dans les niveaux supérieurs"""
 
     def __init__(self, row: int, porte_entree: str):
         config = {"nord": True, "sud": True, "est": True, "ouest": True}
         config[porte_entree] = True
-
 
         super().__init__(
             nom="Master Bedroom",
@@ -113,3 +111,16 @@ class MasterBedroom(Piece):
             objets=["2_des", "4_or", "1_cle", "3_gemmes", "lockpick"],
             couleur="violette"
         )
+
+
+# Pièce Boudoir
+
+
+# Pièce Nursery
+
+
+# Pièce BunkRoom
+
+
+# Pièce HerLadyshipsChamber
+
