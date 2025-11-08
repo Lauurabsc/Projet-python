@@ -185,6 +185,15 @@ class Jeu:
 
             self.joueur.inventaire.afficher(self.fenetre, self.rect_inventaire)
 
+            # Défaite
+                # Si le joueur n'a plus de pas
+            if self.joueur.inventaire.pas <= 0:
+                texte_defaite = self.font_titre.render ("Plus de pas, la partie est PERDUE !", True, (255, 0, 0))
+                self.fenetre.blit(texte_defaite, (self.LARGEUR//2, self.HAUTEUR//2 - 45))        
+                pygame.display.flip()
+                pygame.time.wait(4000) # Temps pour lire le message de défaite
+                self.en_cours = False
+
             # A COMPLETER
 
 
