@@ -2,6 +2,7 @@
 import pygame
 from manoir import Manoir
 from piece.piece_special import EntranceHall
+from Inventaire import Inventaire
 
 
 class Jeu:
@@ -70,6 +71,8 @@ class Jeu:
             800,                          
             250                          
         )
+
+        self.inventaire = Inventaire()
 
         # Zones des pièces
 
@@ -158,6 +161,8 @@ class Jeu:
             self.fenetre.blit(self.surface_manoir, self.rect_manoir)
 
             self.dessiner_titres()
+
+            self.inventaire.afficher(self.fenetre, self.rect_inventaire)
 
             # A COMPLETER
 
