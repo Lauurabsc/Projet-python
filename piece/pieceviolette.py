@@ -14,7 +14,7 @@ class Bedrooms(Piece):
             nom="Bedrooms",
             row=row,
             porte_config=config,
-            image_path="images/Bedrooms.png",
+            image_path="Images_Blue_Prince/Images/Bedrooms/Bedrooms.png",
             rarete=1,
             couleur="violette"
         )
@@ -38,7 +38,7 @@ class GuestBedroom(Piece):
             nom="Guest Bedroom",
             row=row,
             porte_config=config,
-            image_path="images/Guest_Bedroom.png",
+            image_path="Images_Blue_Prince/Images/Bedrooms/Guest_Bedroom.png",
             rarete=1,
             couleur="violette"
         )
@@ -63,7 +63,7 @@ class ServantsQuarters(Piece):
             nom="Servant's Quarters",
             row=row,
             porte_config=config,
-            image_path="images/Servants_Quarters.png",
+            image_path="Images_Blue_Prince/Images/Bedrooms/Servant%27s_Quarters.png",
             rarete=2,
             objets=["2_des", "1_gemme", "detecteur_metaux", "pelle"],
             couleur="violette"
@@ -109,7 +109,7 @@ class MasterBedroom(Piece):
             porte_config=config,
             rarete=3,
             condition_placement="niveaux_superieurs",
-            image_path="images/Master_Bedroom.png",
+            image_path="Images_Blue_Prince/Images/Bedrooms/Master_Bedroom.png",
             objets=["2_des", "4_or", "1_cle", "3_gemmes", "lockpick"],
             couleur="violette"
         )
