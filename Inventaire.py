@@ -50,7 +50,10 @@ class Inventaire:
             return pygame.transform.scale(image, (40, 40))
 
     # Ajout de ressources
-
+    def ajouter_pas(self, n=1):
+        """Ajoute n pas"""
+        self.pas += n
+        
     def ajouter_piece_or(self, n=1):
         """Ajoute n pièces d'or"""
         self.piece_or += n
