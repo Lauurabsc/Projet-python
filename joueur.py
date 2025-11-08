@@ -1,5 +1,5 @@
 import pygame
-from inventaire import Inventaire
+from Inventaire import Inventaire
 
 
 class Joueur : 
