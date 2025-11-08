@@ -1,7 +1,7 @@
 # Importation des bibliothèques
 import pygame
 from manoir import Manoir
-from piece.piece_special import EntranceHall
+from piece.piece_special import EntranceHall, Antechamber
 from Inventaire import Inventaire
 from joueur import Joueur
 
@@ -64,6 +64,10 @@ class Jeu:
             # Placement de la pièce d'entrée sur la grille
         self.manoir.ajouter_piece(self.entree, ligne=8, colonne=2)
 
+        # Pièce de sortie
+        self.sortie = Antechamber()
+            # Placement de la pièce de sortie sur la grille
+        self.manoir.ajouter_piece(self.sortie, ligne=0, colonne=2)
 
         # Zones inventaire (en huat à droite)
         self.rect_inventaire = pygame.Rect(
