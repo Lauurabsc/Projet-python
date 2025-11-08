@@ -31,29 +31,36 @@ class Joueur :
     def deplacer(self, direction, manoir):
         """
         Tente de déplacer le joueur dans une direction.
+        Retire 1 pas à chaque déplacement réussi (possible).
         """
-        
+        deplacement_reussi = False
+
         if direction == "haut":
             if self.ligne > 0:
                 self.ligne -= 1
-                return True # Déplacement réussi
+                deplacement_reussi = True
                 
         elif direction == "bas":
             if self.ligne < manoir.lignes - 1:
                 self.ligne += 1
-                return True # Déplacement réussi
+                deplacement_reussi = True
                 
         elif direction == "gauche":
             if self.colonne > 0:
                 self.colonne -= 1
-                return True # Déplacement réussi
+                deplacement_reussi = True
                 
         elif direction == "droite":
             if self.colonne < manoir.colonnes - 1:
                 self.colonne += 1
-                return True # Déplacement réussi
+                deplacement_reussi = True
         
-        return False # Déplacement échoué
+        # Si le déplacement a réussi, nous retirons 1 pas
+        if deplacement_reussi:
+            self.inventaire.consommer_pas()
+
+            
+        return deplacement_reussi
     
 
     def dessiner_curseur(self, surface_manoir, taille_case, couleur):
