@@ -3,6 +3,7 @@ import pygame
 from manoir import Manoir
 from piece.piece_special import EntranceHall
 from Inventaire import Inventaire
+from joueur import Joueur
 
 
 class Jeu:
@@ -83,6 +84,9 @@ class Jeu:
             400                          
         )
 
+        # Création du joueur à la position de départ (EntranceHall)
+        self.joueur = Joueur(ligne_depart=8, colonne_depart=2)
+
         # Contrôle de la boucle de jeu
         self.en_cours = True # La boucle est active
         self.clock = pygame.time.Clock()  # Régule le nombre d'images par seconde
@@ -137,6 +141,16 @@ class Jeu:
                 if evenement.type == pygame.KEYDOWN:
                     if evenement.key == pygame.K_ESCAPE:
                         self.en_cours = False
+                    
+                    # Déplacement du joueur avec le clavier
+                    elif evenement.key in [pygame.K_z, pygame.K_UP]:
+                        self.joueur.deplacer("haut", self.manoir)
+                    elif evenement.key in [pygame.K_s, pygame.K_DOWN]:
+                        self.joueur.deplacer("bas", self.manoir)
+                    elif evenement.key in [pygame.K_q, pygame.K_LEFT]:
+                        self.joueur.deplacer("gauche", self.manoir)
+                    elif evenement.key in [pygame.K_d, pygame.K_RIGHT]:
+                        self.joueur.deplacer("droite", self.manoir) 
 
 
             # Couleur de fond = noir - accueille la grille, le joueur, etc.
@@ -156,6 +170,9 @@ class Jeu:
                 for piece in ligne:
                     if piece:
                         piece.draw(self.surface_manoir)
+
+            # Dessin du curseur du joueur sur le manoir
+            self.joueur.dessiner_curseur(self.surface_manoir, self.manoir.taille_case, (255, 255, 255))
 
             # Surface du Manoir sur la fenêtre principale
             self.fenetre.blit(self.surface_manoir, self.rect_manoir)
