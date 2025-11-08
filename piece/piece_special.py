@@ -52,7 +52,7 @@ class Antechamber(Piece):
             porte_config=config,
             gemmes=0,       
             rarete=0,      
-            image_path="images/Antechamber.png",
+            image_path="Images_Blue_Prince/Images/Rooms/Antechamber.png",
             objets=None,
             effet_special="Portes scellées. Doit être déverrouillée.",
             condition_placement="Fixe au rang 9", 
