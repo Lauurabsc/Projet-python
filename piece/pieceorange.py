@@ -4,7 +4,7 @@ from ..porte import Porte
 
 class Hallway(Piece): 
     """Pièce Hallway 
-    La pièce la plus simpe, avec 4 portes
+    La pièce la plus simple, avec 4 portes
     """
     def __init__(self,row): 
         config = {"nord": True, "sud": True, "est": True, "ouest": True}
@@ -13,7 +13,7 @@ class Hallway(Piece):
             nom="Hallway",
             row=row,
             porte_config=config,
-            image_path="images/Hallway.png", 
+            image_path="Images_Blue_Prince/Images/Hallways/Hallway.png", 
             gemmes=0,
             rarete=1, 
             objets=None,
@@ -36,7 +36,7 @@ class SecretPassage(Piece):
             nom="Secret Passage",
             row=row,
             porte_config=config,
-            image_path="images/Secret_Passage.png", # Supposition
+            image_path="Images_Blue_Prince/Images/Hallways/Secret_Passage.png", # Supposition
             gemmes=0,
             rarete=2, 
             objets=None,
@@ -65,7 +65,7 @@ class Foyer(Piece):
             nom="Foyer",
             row=row,
             porte_config=config,
-            image_path="images/Foyer.png", 
+            image_path="Images_Blue_Prince/Images/Hallways/Foyer.png", 
             gemmes=1, 
             rarete=3,
             objets=None,
@@ -110,7 +110,7 @@ class GreatHall(Piece):
             nom="Great Hall",
             row=row,
             porte_config=config,
-            image_path="images/Great_Hall.png",
+            image_path="Images_Blue_Prince/Images/Hallways/Great_Hall.png",
             gemmes=1, 
             rarete=3, 
             objets=None,
