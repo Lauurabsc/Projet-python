@@ -96,7 +96,22 @@ class Jeu:
         texte_choix = self.font_titre.render("Please choose a room :", True, self.COULEUR_CADRE)
         self.fenetre.blit(texte_choix, (self.rect_choix_piece.x + 10, self.rect_choix_piece.y + 10))
    
+        # 3 pièces
+        card_width = 180
+        card_height = 250
+        card_y = self.rect_choix_piece.y + 60
 
+        #Pièce 1 
+        rect_card_1 = pygame.Rect(self.rect_choix_piece.x + 100, card_y, card_width, card_height)
+        pygame.draw.rect(self.fenetre, self.COULEUR_CADRE, rect_card_1, 1)
+
+        # Pièce 2
+        rect_card_2 = pygame.Rect(rect_card_1.right + 50, card_y, card_width, card_height)
+        pygame.draw.rect(self.fenetre, (255, 0, 0), rect_card_2, 2) # Bord rouge
+
+        # Pièce 3
+        rect_card_3 = pygame.Rect(rect_card_2.right + 50, card_y, card_width, card_height)
+        pygame.draw.rect(self.fenetre, self.COULEUR_CADRE, rect_card_3, 1)
 
     def boucle_principale(self):
         """
