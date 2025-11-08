@@ -29,8 +29,8 @@ class Manoir:
         self.grille = [[None for _ in range(colonnes)] for _ in range(lignes)]
 
 
-        # Couleur de la grille : gris
-        self.couleur_grille = (180, 180, 180)
+        # Couleur de la grille : bleu
+        self.couleur_grille = (22, 70, 158)
 
 
     def dessiner(self, surface):
