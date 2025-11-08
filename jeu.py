@@ -154,16 +154,16 @@ class Jeu:
                     elif evenement.key in [pygame.K_q, pygame.K_LEFT]:
                         self.joueur.deplacer("gauche", self.manoir)
                     elif evenement.key in [pygame.K_d, pygame.K_RIGHT]:
-                        self.joueur.deplacer("droite", self.manoir) 
+                        self.joueur.deplacer("droite", self.manoir)
 
 
             # Couleur de fond = noir - accueille la grille, le joueur, etc.
             self.fenetre.fill(self.COULEUR_FOND)
             
-            #Dessin du manoir
+            # Dessin du manoir
             self.surface_manoir.fill(self.COULEUR_FOND)
 
-            #Dessin la grille sur la surface du manoir
+            # Dessin de la grille sur la surface du manoir
             self.manoir.dessiner(self.surface_manoir)
 
             # Dessin des cases composant la grille
@@ -183,7 +183,7 @@ class Jeu:
 
             self.dessiner_titres()
 
-            self.inventaire.afficher(self.fenetre, self.rect_inventaire)
+            self.joueur.inventaire.afficher(self.fenetre, self.rect_inventaire)
 
             # A COMPLETER
 
