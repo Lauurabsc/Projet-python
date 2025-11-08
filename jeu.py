@@ -194,6 +194,18 @@ class Jeu:
                 pygame.time.wait(4000) # Temps pour lire le message de défaite
                 self.en_cours = False
 
+            # Victoire
+                # Si le joueur atteint la pièce finale
+            piece_actuelle = self.manoir.grille[self.joueur.ligne][self.joueur.colonne]
+            if isinstance(piece_actuelle, Antechamber):
+                ecriture_victoire = pygame.font.Font(None, 55)
+
+                texte_victoire = ecriture_victoire.render("Victoire ! Vous avez atteint l'Antechamber !", True, (255, 215, 0))
+                self.fenetre.blit(texte_victoire, (self.LARGEUR//2 - 400, self.HAUTEUR//2 - 45)) 
+                pygame.display.flip()
+                pygame.time.wait(4000) # Temps pour lire le message de défaite
+                self.en_cours = False
+
             # A COMPLETER
 
 
