@@ -4,6 +4,7 @@ from manoir import Manoir
 from piece.piece_special import EntranceHall, Antechamber
 from Inventaire import Inventaire
 from joueur import Joueur
+from tirage import Pioche
 
 
 class Jeu:
@@ -92,6 +93,24 @@ class Jeu:
         self.joueur = Joueur(ligne_depart=8, colonne_depart=2)
         self.inventaire = self.joueur.inventaire
 
+        # Jeu a 2 éats : "EXPLORATION" ou "TIRAGE_PIECE"
+        self.etat_jeu = "EXPLORATION"
+
+        # Création de la pioche
+        self.pioche = Pioche()
+
+        # Les 3 pièces qui sont proposées
+        self.pieces_proposees = []
+
+        # Où la nouvelle pièce sera placée
+        self.coordonnees_tirage = None
+        
+        # Par quelle porte le joueur va entrer
+        self.direction_entree = None
+
+        # Map pour traduire la direction de l'action en direction d'entrée 
+        self.map_direction_opposee = {"nord": "sud", "sud": "nord", "ouest": "est", "est": "ouest"}
+        
         # Curseur d'action par les flèches 
         self.porte_selectionnee = "nord"
 
@@ -115,35 +134,142 @@ class Jeu:
         self.en_cours = True # La boucle est active
         self.clock = pygame.time.Clock()  # Régule le nombre d'images par seconde
 
-    def dessiner_titres(self): 
+    def lancer_tirage_piece(self, coords_cible, direction_action):
+        """
+        Passe le jeu en mode "TIRAGE_PIECE".
+        Demande 3 pièces à la Pioche et les instancie.
+        """
+        ligne_cible, col_cible = coords_cible
 
-        # Cadres et Titre Inventaire 
+        # Demande 3 classes de pièce à la Pioche
+        classes_tirees = self.pioche.tirer_trois_pieces(ligne_cible)
+        
+        if not classes_tirees:
+            print("Tirage annulé (pioche vide ?)")
+            return 
+
+        #Stocker les infos
+        self.coordonnees_tirage = coords_cible
+        self.direction_entree = self.map_direction_opposee[direction_action]
+        self.pieces_proposees = []
+        
+        #  Instancier les 3 pièces
+        for classe_piece in classes_tirees:
+            piece = classe_piece(row=ligne_cible,porte_entree_direction=self.direction_entree)
+            self.pieces_proposees.append(piece)
+
+            
+        # Changer l'état du jeu
+        self.etat_jeu = "TIRAGE_PIECE"
+
+    def confirmer_choix_piece(self, index_choix): 
+        """
+        Finalise le choix du joueur, place la pièce, déplace le joueur
+        et remet le jeu en mode EXPLORATION.
+        """
+        #Vérifie si l'index est valide
+        if not (0 <= index_choix < len(self.pieces_proposees)):
+            print(f"Erreur : Choix d'index invalide ({index_choix})")
+            return
+
+        #Récupère la pièce choisie
+        piece_choisie = self.pieces_proposees[index_choix]
+        
+        # A ajouter : Gérer le coût en gemmes
+            
+        # Retirer la classe de la pièce de la pioche
+        self.pioche.retirer_piece(type(piece_choisie))
+        
+        # Ajouter la pièce au manoir
+        ligne, col = self.coordonnees_tirage
+        self.manoir.ajouter_piece(piece_choisie, ligne, col)
+        
+        #  Appeler 'on_discover' pour les effets de pose 
+        piece_choisie.on_discover(self.joueur, self, col, ligne, self.direction_entree)
+        
+        # Appeler 'on_draft' pour les effets de choix 
+        piece_choisie.on_draft(self.joueur, self)
+        
+        # Déplacer le joueur dans la nouvelle pièce
+        self.joueur.deplacer_vers(ligne, col)
+        
+        #Appeler 'on_enter'
+        piece_choisie.on_enter(self.joueur, self)
+        
+        #Revenir à l'exploration
+        self.etat_jeu = "EXPLORATION"
+        self.pieces_proposees = []
+        self.coordonnees_tirage = None
+        self.direction_entree = None
+
+    def dessiner_interface_droite(self): 
+        """
+        Dessine l'interface de droite (inventaire + zone d'action)
+        en fonction de l'état du jeu.
+        """
+        # Dessin de l'inventaire (toujours affiché)
         pygame.draw.rect(self.fenetre, self.COULEUR_CADRE, self.rect_inventaire, 2)
         texte_inv = self.font_titre.render("Inventaire", True, self.COULEUR_CADRE)
         self.fenetre.blit(texte_inv, (self.rect_inventaire.x + 10, self.rect_inventaire.y + 10))
         
-        # Cadre et Titre Choix des pièces
+        # Affichage de l'inventaire
+        self.joueur.inventaire.afficher(self.fenetre, self.rect_inventaire)
+
+        
+        # Dessin de la zone d'action (change en fonction de l'état)
         pygame.draw.rect(self.fenetre, self.COULEUR_CADRE, self.rect_choix_piece, 2)
-        texte_choix = self.font_titre.render("Please choose a room :", True, self.COULEUR_CADRE)
-        self.fenetre.blit(texte_choix, (self.rect_choix_piece.x + 10, self.rect_choix_piece.y + 10))
+
+        if self.etat_jeu == "EXPLORATION":
+            # Afficher les instructions de déplacement
+            titre = self.font_titre.render("Exploration", True, self.COULEUR_CADRE)
+            self.fenetre.blit(titre, (self.rect_choix_piece.x + 10, self.rect_choix_piece.y + 10))
+
+            txt_zqsd = self.font_normal.render("ZQSD : Se déplacer ", True, self.COULEUR_CADRE)
+            self.fenetre.blit(txt_zqsd, (self.rect_choix_piece.x + 10, self.rect_choix_piece.y + 50))
+            
+            txt_arrow = self.font_normal.render("Flèches : Viser une porte", True, self.COULEUR_CADRE)
+            self.fenetre.blit(txt_arrow, (self.rect_choix_piece.x + 10, self.rect_choix_piece.y + 75))
+
+            txt_space = self.font_normal.render("ESPACE : Ouvrir / Traverser", True, self.COULEUR_CADRE)
+            self.fenetre.blit(txt_space, (self.rect_choix_piece.x + 10, self.rect_choix_piece.y + 100))
+
+            # Afficher la porte visée
+            txt_visee = self.font_normal.render(f"Porte visée : {self.porte_selectionnee.upper()}", True, (255, 255, 0))
+            self.fenetre.blit(txt_visee, (self.rect_choix_piece.x + 10, self.rect_choix_piece.y + 140))
+
+
+        elif self.etat_jeu == "TIRAGE_PIECE":
+            # Afficher les 3 pièces proposées
+            texte_choix = self.font_titre.render("Choisissez une pièce (1, 2, 3) :", True, (255, 255, 0))
+            self.fenetre.blit(texte_choix, (self.rect_choix_piece.x + 10, self.rect_choix_piece.y + 10))
    
-        # 3 pièces
-        card_width = 180
-        card_height = 250
-        card_y = self.rect_choix_piece.y + 60
+            # Affichage des 3 pièces
+            card_width = 180
+            card_height = 250
+            card_y = self.rect_choix_piece.y + 60
+            x_start = self.rect_choix_piece.x + 100
 
-        #Pièce 1 
-        rect_card_1 = pygame.Rect(self.rect_choix_piece.x + 100, card_y, card_width, card_height)
-        pygame.draw.rect(self.fenetre, self.COULEUR_CADRE, rect_card_1, 1)
+            for i, piece in enumerate(self.pieces_proposees):
+                # Calcule la position de la carte
+                card_x = x_start + i * (card_width + 50)
+                rect_card = pygame.Rect(card_x, card_y, card_width, card_height)
+                
+                # Dessine le cadre
+                pygame.draw.rect(self.fenetre, self.COULEUR_CADRE, rect_card, 1)
 
-        # Pièce 2
-        rect_card_2 = pygame.Rect(rect_card_1.right + 50, card_y, card_width, card_height)
-        pygame.draw.rect(self.fenetre, (255, 0, 0), rect_card_2, 2) # Bord rouge
+                # Afficher l'image
+                img_scaled = pygame.transform.scale(piece.image_surface, (card_width - 20, card_width - 20))
+                self.fenetre.blit(img_scaled, (card_x + 10, card_y + 10))
 
-        # Pièce 3
-        rect_card_3 = pygame.Rect(rect_card_2.right + 50, card_y, card_width, card_height)
-        pygame.draw.rect(self.fenetre, self.COULEUR_CADRE, rect_card_3, 1)
-
+                
+                # Afficher le nom
+                nom_texte = self.font_normal.render(piece.nom, True, self.COULEUR_CADRE)
+                self.fenetre.blit(nom_texte, (card_x + 10, card_y + card_width))
+                
+                # Afficher le numéro de choix
+                num_texte = self.font_titre.render(str(i+1), True, (255, 255, 0))
+                self.fenetre.blit(num_texte, (card_x + (card_width // 2) - 5, card_y + card_height - 35))
+    
 
     def dessiner_curseur_action(self, surface): 
         """
@@ -193,46 +319,58 @@ class Jeu:
                     if evenement.key == pygame.K_ESCAPE:
                         self.en_cours = False
                 
-                    # Mouvement du joueur (ZQSD)
-                    if evenement.key in self.map_mouvement_direction:
-                        direction_mouvement = self.map_mouvement_direction[evenement.key]
-                        
-                        #Tenter un louvement immédiat
-                        statut, coords = self.joueur.tenter_action(direction_mouvement, self.manoir)
-                        
-                        if statut == "MOUVEMENT_REUSSI":
-                            # On ne bouge que si la pièce existe déjà
-                            self.joueur.deplacer_vers(coords[0], coords[1])
-                            piece = self.manoir.grille[coords[0]][coords[1]]
-                            if piece:
-                                piece.on_enter(self.joueur, self)
-                        else:
-                            # Si c'est DECOUVERTE ou ECHOUE, ZQSD ne fait rien.
-                            print(f"Déplacement ZQSD bloqué vers {direction_mouvement}.")
+                    if self.etat_jeu == "EXPLORATION":
 
-                    #Selection de portee (flèches)
-                    elif evenement.key in self.map_action_direction:
-                        self.porte_selectionnee = self.map_action_direction[evenement.key]
-
-                    #Valider une action avec la touche "espace"
-                    elif evenement.key == pygame.K_SPACE:
-                        statut, coords = self.joueur.tenter_action(self.porte_selectionnee, self.manoir)
+                        # Mouvement du joueur (ZQSD)
+                        if evenement.key in self.map_mouvement_direction:
+                            direction_mouvement = self.map_mouvement_direction[evenement.key]
                         
-                        if statut == "MOUVEMENT_REUSSI":
-                            # La porte est ouverte et mène à une pièce connue
-                            self.joueur.deplacer_vers(coords[0], coords[1])
-                            piece = self.manoir.grille[coords[0]][coords[1]]
-                            if piece:
-                                piece.on_enter(self.joueur, self)
+                            #Tenter un louvement immédiat
+                            statut, coords = self.joueur.tenter_action(direction_mouvement, self.manoir)
+                        
+                            if statut == "MOUVEMENT_REUSSI":
+                                # On ne bouge que si la pièce existe déjà
+                                self.joueur.deplacer_vers(coords[0], coords[1])
+                                piece = self.manoir.grille[coords[0]][coords[1]]
+                                if piece:
+                                    piece.on_enter(self.joueur, self)
+                            else:
+                                # Si c'est DECOUVERTE ou ECHOUE, ZQSD ne fait rien.
+                                print(f"Déplacement ZQSD bloqué vers {direction_mouvement}.")
+
+                        #Selection de portee (flèches)
+                        elif evenement.key in self.map_action_direction:
+                            self.porte_selectionnee = self.map_action_direction[evenement.key]
+
+                        #Valider une action avec la touche "espace"
+                        elif evenement.key == pygame.K_SPACE:
+                            statut, coords = self.joueur.tenter_action(self.porte_selectionnee, self.manoir)
+                        
+                            if statut == "MOUVEMENT_REUSSI":
+                                # La porte est ouverte et mène à une pièce connue
+                                self.joueur.deplacer_vers(coords[0], coords[1])
+                                piece = self.manoir.grille[coords[0]][coords[1]]
+                                if piece:
+                                    piece.on_enter(self.joueur, self)
                                 
-                        elif statut == "DECOUVERTE":
-                            # La porte est ouverte et mène à l'inconnu 
-                            print(f"DECOUVERTE ! Emplacement : {coords}")
-                            # TO DO : Appeler tirage de la pièce 
+                            elif statut == "DECOUVERTE":
+                                # Appelle au tirage
+                                self.lancer_tirage_piece(coords, self.porte_selectionnee)
                             
-                        elif statut == "MOUVEMENT_ECHOUE":
-                            print(f"Impossible d'ouvrir la porte {self.porte_selectionnee}.")
-                            # (Mur, porte verrouillée, etc.)
+                            elif statut == "MOUVEMENT_ECHOUE":
+                                print(f"Impossible d'ouvrir la porte {self.porte_selectionnee}.")
+                                # (Mur, porte verrouillée, etc.)
+                    
+                    # Le joueur choisit une pièce
+                    elif self.etat_jeu == "TIRAGE_PIECE":
+                        if evenement.key == pygame.K_1:
+                            self.confirmer_choix_piece(0)
+                        elif evenement.key == pygame.K_2:
+                            self.confirmer_choix_piece(1)
+                        elif evenement.key == pygame.K_3:
+                            self.confirmer_choix_piece(2)
+
+                            # A complter le Re-roll avec les dés
 
 
             # Couleur de fond = noir - accueille la grille, le joueur, etc.
@@ -256,13 +394,14 @@ class Jeu:
             # Dessin du curseur du joueur sur le manoir
             self.joueur.dessiner_curseur(self.surface_manoir, self.manoir.taille_case, (255, 255, 255))
             
-            # AJOUT : Dessin du curseur d'action (le trait)
-            self.dessiner_curseur_action(self.surface_manoir)
+            # On ne dessine le curseur d'action que si on explore
+            if self.etat_jeu == "EXPLORATION":
+                self.dessiner_curseur_action(self.surface_manoir)
 
             # Surface du Manoir sur la fenêtre principale
             self.fenetre.blit(self.surface_manoir, self.rect_manoir)
 
-            self.dessiner_titres()
+            self.dessiner_interface_droite()
 
             self.joueur.inventaire.afficher(self.fenetre, self.rect_inventaire)
 
