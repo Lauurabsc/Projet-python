@@ -90,14 +90,34 @@ class Jeu:
 
         # Création du joueur à la position de départ (EntranceHall)
         self.joueur = Joueur(ligne_depart=8, colonne_depart=2)
+        self.inventaire = self.joueur.inventaire
+
+        # Curseur d'action par les flèches 
+        self.porte_selectionnee = "nord"
+
+        # Map pour traduire ZQSD en direction
+        self.map_mouvement_direction = {
+            pygame.K_z: "nord",
+            pygame.K_s: "sud",
+            pygame.K_q: "ouest",
+            pygame.K_d: "est"
+        }
+
+        # Map pour traduire les Flèches en direction
+        self.map_action_direction = {
+            pygame.K_UP: "nord",
+            pygame.K_DOWN: "sud",
+            pygame.K_LEFT: "ouest",
+            pygame.K_RIGHT: "est"
+        }
 
         # Contrôle de la boucle de jeu
         self.en_cours = True # La boucle est active
         self.clock = pygame.time.Clock()  # Régule le nombre d'images par seconde
 
     def dessiner_titres(self): 
-        # Cadres et Titre Inventaire 
 
+        # Cadres et Titre Inventaire 
         pygame.draw.rect(self.fenetre, self.COULEUR_CADRE, self.rect_inventaire, 2)
         texte_inv = self.font_titre.render("Inventaire", True, self.COULEUR_CADRE)
         self.fenetre.blit(texte_inv, (self.rect_inventaire.x + 10, self.rect_inventaire.y + 10))
@@ -124,6 +144,33 @@ class Jeu:
         rect_card_3 = pygame.Rect(rect_card_2.right + 50, card_y, card_width, card_height)
         pygame.draw.rect(self.fenetre, self.COULEUR_CADRE, rect_card_3, 1)
 
+
+    def dessiner_curseur_action(self, surface): 
+        """
+        Dessine le "trait épais" sur la porte sélectionnée (curseur d'action).
+        """
+
+        # Position en pixels du coin de la case du joueur
+        x = self.joueur.colonne * self.taille_case_manoir
+        y = self.joueur.ligne * self.taille_case_manoir
+        taille = self.taille_case_manoir
+        epaisseur = 5 # "Trait épais"
+        couleur = (255, 255, 255) # Blanc
+
+        # Marge pour que le trait soit "sur" le bord
+        marge = epaisseur // 2
+
+        if self.porte_selectionnee == "nord":
+            pygame.draw.line(surface, couleur, (x + marge, y + marge), (x + taille - marge, y + marge), epaisseur)
+        elif self.porte_selectionnee == "sud":
+            pygame.draw.line(surface, couleur, (x + marge, y + taille - marge), (x + taille - marge, y + taille - marge), epaisseur)
+        elif self.porte_selectionnee == "ouest":
+            pygame.draw.line(surface, couleur, (x + marge, y + marge), (x + marge, y + taille - marge), epaisseur)
+        elif self.porte_selectionnee == "est":
+            pygame.draw.line(surface, couleur, (x + taille - marge, y + marge), (x + taille - marge, y + taille - marge), epaisseur)
+
+        
+
     def boucle_principale(self):
         """
         Boucle principale du jeu
@@ -145,16 +192,47 @@ class Jeu:
                 if evenement.type == pygame.KEYDOWN:
                     if evenement.key == pygame.K_ESCAPE:
                         self.en_cours = False
-                    
-                    # Déplacement du joueur avec le clavier
-                    elif evenement.key in [pygame.K_z, pygame.K_UP]:
-                        self.joueur.deplacer("haut", self.manoir)
-                    elif evenement.key in [pygame.K_s, pygame.K_DOWN]:
-                        self.joueur.deplacer("bas", self.manoir)
-                    elif evenement.key in [pygame.K_q, pygame.K_LEFT]:
-                        self.joueur.deplacer("gauche", self.manoir)
-                    elif evenement.key in [pygame.K_d, pygame.K_RIGHT]:
-                        self.joueur.deplacer("droite", self.manoir)
+                
+                    # Mouvement du joueur (ZQSD)
+                    if evenement.key in self.map_mouvement_direction:
+                        direction_mouvement = self.map_mouvement_direction[evenement.key]
+                        
+                        #Tenter un louvement immédiat
+                        statut, coords = self.joueur.tenter_action(direction_mouvement, self.manoir)
+                        
+                        if statut == "MOUVEMENT_REUSSI":
+                            # On ne bouge que si la pièce existe déjà
+                            self.joueur.deplacer_vers(coords[0], coords[1])
+                            piece = self.manoir.grille[coords[0]][coords[1]]
+                            if piece:
+                                piece.on_enter(self.joueur, self)
+                        else:
+                            # Si c'est DECOUVERTE ou ECHOUE, ZQSD ne fait rien.
+                            print(f"Déplacement ZQSD bloqué vers {direction_mouvement}.")
+
+                    #Selection de portee (flèches)
+                    elif evenement.key in self.map_action_direction:
+                        self.porte_selectionnee = self.map_action_direction[evenement.key]
+
+                    #Valider une action avec la touche "espace"
+                    elif evenement.key == pygame.K_SPACE:
+                        statut, coords = self.joueur.tenter_action(self.porte_selectionnee, self.manoir)
+                        
+                        if statut == "MOUVEMENT_REUSSI":
+                            # La porte est ouverte et mène à une pièce connue
+                            self.joueur.deplacer_vers(coords[0], coords[1])
+                            piece = self.manoir.grille[coords[0]][coords[1]]
+                            if piece:
+                                piece.on_enter(self.joueur, self)
+                                
+                        elif statut == "DECOUVERTE":
+                            # La porte est ouverte et mène à l'inconnu 
+                            print(f"DECOUVERTE ! Emplacement : {coords}")
+                            # TO DO : Appeler tirage de la pièce 
+                            
+                        elif statut == "MOUVEMENT_ECHOUE":
+                            print(f"Impossible d'ouvrir la porte {self.porte_selectionnee}.")
+                            # (Mur, porte verrouillée, etc.)
 
 
             # Couleur de fond = noir - accueille la grille, le joueur, etc.
@@ -177,6 +255,9 @@ class Jeu:
 
             # Dessin du curseur du joueur sur le manoir
             self.joueur.dessiner_curseur(self.surface_manoir, self.manoir.taille_case, (255, 255, 255))
+            
+            # AJOUT : Dessin du curseur d'action (le trait)
+            self.dessiner_curseur_action(self.surface_manoir)
 
             # Surface du Manoir sur la fenêtre principale
             self.fenetre.blit(self.surface_manoir, self.rect_manoir)
