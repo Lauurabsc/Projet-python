@@ -1,12 +1,12 @@
-from .piece import Piece
-from ..porte import Porte
+from piece.piece import Piece
+from porte import Porte
 
 
 class Hallway(Piece): 
     """Pièce Hallway 
     La pièce la plus simple, avec 4 portes
     """
-    def __init__(self,row): 
+    def __init__(self, row, porte_entree_direction=None): 
         config = {"nord": True, "sud": True, "est": True, "ouest": True}
     
         super().__init__(
@@ -27,10 +27,11 @@ class SecretPassage(Piece):
     Pièce sans issue qui déclenche un choix de 3 pièce après selection d'une couleur
     """
     
-    def __init__(self, row, porte_entree): 
+    def __init__(self, row, porte_entree_direction="sud"): 
 
         config = {"nord": False, "sud": False, "est": False, "ouest": False}
-        config[porte_entree] = True
+        if porte_entree_direction:
+            config[porte_entree_direction] = True
 
         super().__init__(
             nom="Secret Passage",
@@ -59,7 +60,7 @@ class Foyer(Piece):
     Effet : Déverouille toutes les portes des couloirs (pièces oranges) actuels et futurs.
     """
 
-    def __init__(self, row): 
+    def __init__(self, row, porte_entree_direction=None): 
         config = {"nord": True, "sud": True, "est":False, "ouest": False}
         super().__init__(
             nom="Foyer",
@@ -100,11 +101,11 @@ class GreatHall(Piece):
     Un grand couloir dont les portes sont verouillées sauf si le joueur possède un Foyer. 
     """
 
-    def __init__(self, row, porte_entree):
+    def __init__(self, row, porte_entree_direction=None):
         config = {"nord": True, "sud": True, "est": True, "ouest": True}
 
         # Porte où le joueur est entrée pour ne pas la verouiller
-        self.porte_entree_direction = porte_entree
+        self.porte_entree_direction = porte_entree_direction
 
         super().__init__(
             nom="Great Hall",
@@ -119,13 +120,15 @@ class GreatHall(Piece):
             couleur="orange"
         )
 
-    def on_discover(self, joueur, jeu, col, row) : 
+    def on_discover(self, joueur, jeu, col, row, direction_entree) :
         """
         Effet activé à la pose d
         Vérifie si le joueur à l'effet "Foyer". 
         """
 
-        super().on_discover(joueur, jeu, col, row)
+        self.porte_entree_direction = direction_entree
+
+        super().on_discover(joueur, jeu, col, row,direction_entree)
 
         # Verification si le joueur a l'effet du Foyer
 
