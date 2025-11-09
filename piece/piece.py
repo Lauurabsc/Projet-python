@@ -85,7 +85,7 @@ class Piece :
         pass
 
 
-    def on_discover(self, joueur, jeu, col, row):
+    def on_discover(self, joueur, jeu, col, row, direction_entree):
         """Méthode appelée quand la pièce est placée sur la grille"""
         self.set_position_pixels(col,row)
         self.est_decouverte = True
