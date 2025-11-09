@@ -1,8 +1,9 @@
 # Importation des bibliothèques
 import pygame
 from manoir import Manoir
-from piece.piece_special import EntranceHall
+from piece.piece_special import EntranceHall, Antechamber
 from Inventaire import Inventaire
+from joueur import Joueur
 
 
 class Jeu:
@@ -63,6 +64,10 @@ class Jeu:
             # Placement de la pièce d'entrée sur la grille
         self.manoir.ajouter_piece(self.entree, ligne=8, colonne=2)
 
+        # Pièce de sortie
+        self.sortie = Antechamber()
+            # Placement de la pièce de sortie sur la grille
+        self.manoir.ajouter_piece(self.sortie, ligne=0, colonne=2)
 
         # Zones inventaire (en huat à droite)
         self.rect_inventaire = pygame.Rect(
@@ -82,6 +87,9 @@ class Jeu:
             self.rect_inventaire.width,  
             400                          
         )
+
+        # Création du joueur à la position de départ (EntranceHall)
+        self.joueur = Joueur(ligne_depart=8, colonne_depart=2)
 
         # Contrôle de la boucle de jeu
         self.en_cours = True # La boucle est active
@@ -137,15 +145,25 @@ class Jeu:
                 if evenement.type == pygame.KEYDOWN:
                     if evenement.key == pygame.K_ESCAPE:
                         self.en_cours = False
+                    
+                    # Déplacement du joueur avec le clavier
+                    elif evenement.key in [pygame.K_z, pygame.K_UP]:
+                        self.joueur.deplacer("haut", self.manoir)
+                    elif evenement.key in [pygame.K_s, pygame.K_DOWN]:
+                        self.joueur.deplacer("bas", self.manoir)
+                    elif evenement.key in [pygame.K_q, pygame.K_LEFT]:
+                        self.joueur.deplacer("gauche", self.manoir)
+                    elif evenement.key in [pygame.K_d, pygame.K_RIGHT]:
+                        self.joueur.deplacer("droite", self.manoir)
 
 
             # Couleur de fond = noir - accueille la grille, le joueur, etc.
             self.fenetre.fill(self.COULEUR_FOND)
             
-            #Dessin du manoir
+            # Dessin du manoir
             self.surface_manoir.fill(self.COULEUR_FOND)
 
-            #Dessin la grille sur la surface du manoir
+            # Dessin de la grille sur la surface du manoir
             self.manoir.dessiner(self.surface_manoir)
 
             # Dessin des cases composant la grille
@@ -157,12 +175,36 @@ class Jeu:
                     if piece:
                         piece.draw(self.surface_manoir)
 
+            # Dessin du curseur du joueur sur le manoir
+            self.joueur.dessiner_curseur(self.surface_manoir, self.manoir.taille_case, (255, 255, 255))
+
             # Surface du Manoir sur la fenêtre principale
             self.fenetre.blit(self.surface_manoir, self.rect_manoir)
 
             self.dessiner_titres()
 
-            self.inventaire.afficher(self.fenetre, self.rect_inventaire)
+            self.joueur.inventaire.afficher(self.fenetre, self.rect_inventaire)
+
+            # Défaite
+                # Si le joueur n'a plus de pas
+            if self.joueur.inventaire.pas <= 0:
+                texte_defaite = self.font_titre.render ("Plus de pas, la partie est PERDUE !", True, (255, 0, 0))
+                self.fenetre.blit(texte_defaite, (self.LARGEUR//2, self.HAUTEUR//2 - 45))        
+                pygame.display.flip()
+                pygame.time.wait(4000) # Temps pour lire le message de défaite
+                self.en_cours = False
+
+            # Victoire
+                # Si le joueur atteint la pièce finale
+            piece_actuelle = self.manoir.grille[self.joueur.ligne][self.joueur.colonne]
+            if isinstance(piece_actuelle, Antechamber):
+                ecriture_victoire = pygame.font.Font(None, 55)
+
+                texte_victoire = ecriture_victoire.render("Victoire ! Vous avez atteint l'Antechamber !", True, (255, 215, 0))
+                self.fenetre.blit(texte_victoire, (self.LARGEUR//2 - 400, self.HAUTEUR//2 - 45)) 
+                pygame.display.flip()
+                pygame.time.wait(4000) # Temps pour lire le message de défaite
+                self.en_cours = False
 
             # A COMPLETER
 

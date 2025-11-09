@@ -31,57 +31,37 @@ class Joueur :
     def deplacer(self, direction, manoir):
         """
         Tente de déplacer le joueur dans une direction.
-        Il vérifie l'existence d'une porte
-
-        :param direction: (str) "haut", "bas", "gauche", "droite"
-        :param manoir: (Manoir) L'objet manoir pour la grille et les limites
-        :return: (str) L'action résultante: "MUR", "DEPLACEMENT", ou "TIRAGE"
+        Retire 1 pas à chaque déplacement réussi (possible).
         """
-
-        piece_actuelle = manoir.grille[self.ligne][self.colonne]
-        
+        deplacement_reussi = False
 
         if direction == "haut":
-            dir_porte = "nord"
-            ligne_cible, col_cible = self.ligne - 1, self.colonne
+            if self.ligne > 0:
+                self.ligne -= 1
+                deplacement_reussi = True
+                
         elif direction == "bas":
-            dir_porte = "sud"
-            ligne_cible, col_cible = self.ligne + 1, self.colonne
+            if self.ligne < manoir.lignes - 1:
+                self.ligne += 1
+                deplacement_reussi = True
+                
         elif direction == "gauche":
-            dir_porte = "ouest"
-            ligne_cible, col_cible = self.ligne, self.colonne - 1
+            if self.colonne > 0:
+                self.colonne -= 1
+                deplacement_reussi = True
+                
         elif direction == "droite":
-            dir_porte = "est"
-            ligne_cible, col_cible = self.ligne, self.colonne + 1
-        else:
-            return "MUR", None
+            if self.colonne < manoir.colonnes - 1:
+                self.colonne += 1
+                deplacement_reussi = True
         
-        # Vérification si il y a une porte dans la pièce actuelle 
+        # Si le déplacement a réussi, nous retirons 1 pas
+        if deplacement_reussi:
+            self.inventaire.consommer_pas()
 
-        if piece_actuelle.portes[dir_porte] is None:
-            print(f"Déplacement {direction} impossible : C'est un mur.")
-            return "MUR", None
-        
-        # Si la porte existe, verifier la porte est verouillées (à ajouter plus tard)
-
-        # Vérifier si la case cible est dans la grille
-        if not (0 <= ligne_cible < manoir.lignes and 0 <= col_cible < manoir.colonnes):
-            return "MUR", None # Hors de la grille
+            
+        return deplacement_reussi
     
-        # Analyse de la cible
-        piece_cible = manoir.grille[ligne_cible][col_cible]
-
-        if piece_cible is not None:
-            #La pièce existe déjà
-            self.ligne = ligne_cible
-            self.colonne = col_cible
-            print(f"Déplacement vers pièce existante: {piece_cible.nom}")
-            return "DEPLACEMENT", piece_cible
-        else:
-            # La case est vide
-            print("Déplacement vers une case vide, Déclenchement du tirage !")
-            # On ne bouge pas encore, on signale au jeu de lancer le tirage
-            return "TIRAGE", (ligne_cible, col_cible)
 
     def dessiner_curseur(self, surface_manoir, taille_case, couleur):
         """
