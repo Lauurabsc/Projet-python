@@ -8,13 +8,14 @@ class Bedrooms(Piece):
     """Pièce 'Bedrooms'
     Effet : +2 pas en entrant"""
     
-    def __init__(self, row, porte_entree):
+    def __init__(self, row, porte_entree_direction=None):
         config = {"nord": True, "sud": True, "est": True, "ouest": True}
 
         super().__init__(
             nom="Bedrooms",
             row=row,
             porte_config=config,
+            porte_entree_direction=porte_entree_direction,
             image_path="Images_Blue_Prince/Images/Bedrooms/Bedrooms.png",
             rarete=1,
             couleur="violette"
