@@ -12,7 +12,7 @@ class Piece :
 
 
     def __init__(self, nom, row, porte_config, gemmes=0, rarete=0, image_path=None,
-             objets=None, effet_special=None, condition_placement=None, couleur=None):
+             objets=None, effet_special=None, condition_placement=None, couleur=None, porte_entree_direction=None):
 
 
         self.nom = nom
@@ -42,7 +42,12 @@ class Piece :
 
         for direction, est_presente in porte_config.items():
             if est_presente:
-                self.portes[direction] = Porte(row=row)
+
+                # Vérifie si la porte en cours de création est la porte d'entrée
+                est_la_porte_entree = (direction == porte_entree_direction)
+
+                # On force le déverouillage si c'est le cas
+                self.portes[direction] = Porte(row=row, force_unlocked=est_la_porte_entree)
 
 
         # Charge l'image de la pièce
