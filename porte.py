@@ -32,7 +32,15 @@ class Porte :
 
         :return: (bool) True si la porte est verrouillée, False sinon.
         """
-        return self.niveau_verouillage > 0
+        # On vérifie si c'est un entier > 0
+        if isinstance(self.niveau_verouillage, int):
+            return self.niveau_verouillage > 0
+        
+        # On vérifie si c'est "scellee"
+        if isinstance(self.niveau_verouillage, str):
+            return self.niveau_verouillage == "scellee"
+        
+        return False
    
     def verouillage_aleatoire(self, row):
         """
