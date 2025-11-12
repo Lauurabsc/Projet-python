@@ -5,7 +5,7 @@ class EntranceHall(Piece):
 
     """Pièce de départ"""
 
-    def __init__(self, row = 0): 
+    def __init__(self, col, row = 0):
 
         config = {
             "nord": True,
@@ -17,6 +17,7 @@ class EntranceHall(Piece):
         super().__init__(
             nom="Entrance Hall",
             row=row,
+            col=col,
             porte_config=config,
 
             image_path="Images_Blue_Prince/Images/Rooms/Entrance_Hall.png",
@@ -37,7 +38,7 @@ class Antechamber(Piece):
     Pièce fixe au Rang 9. Toutes les portes sont scellées.
     """
 
-    def __init__(self, row = 8): 
+    def __init__(self,col,  row = 8): 
 
         config = {
             "nord": True,
@@ -49,6 +50,7 @@ class Antechamber(Piece):
         super().__init__(
             nom="Antechamber",
             row=row, 
+            col=col,
             porte_config=config,
             gemmes=0,       
             rarete=0,      
