@@ -6,12 +6,13 @@ class Hallway(Piece):
     """Pièce Hallway 
     La pièce la plus simple, avec 4 portes
     """
-    def __init__(self, row, porte_entree_direction=None): 
+    def __init__(self, row, col,  porte_entree_direction=None): 
         config = {"nord": True, "sud": True, "est": True, "ouest": True}
     
         super().__init__(
             nom="Hallway",
             row=row,
+            col=col,
             porte_config=config,
             porte_entree_direction=porte_entree_direction,
             image_path="Images_Blue_Prince/Images/Hallways/Hallway.png", 
@@ -28,7 +29,7 @@ class SecretPassage(Piece):
     Pièce sans issue qui déclenche un choix de 3 pièce après selection d'une couleur
     """
     
-    def __init__(self, row, porte_entree_direction="sud"): 
+    def __init__(self, row,col, porte_entree_direction="sud"): 
 
         config = {"nord": False, "sud": False, "est": False, "ouest": False}
         if porte_entree_direction:
@@ -37,6 +38,7 @@ class SecretPassage(Piece):
         super().__init__(
             nom="Secret Passage",
             row=row,
+            col=col,
             porte_config=config,
             porte_entree_direction=porte_entree_direction,
             image_path="Images_Blue_Prince/Images/Hallways/Secret_Passage.png", # Supposition
@@ -45,7 +47,8 @@ class SecretPassage(Piece):
             objets=None,
             effet_special="Déclenche un draft de couleur spécial",
             condition_placement=None,
-            couleur="orange"
+            couleur="orange", 
+            default_orientation="sud"
         )
 
     def on_enter(self, joueur, jeu): 
@@ -62,11 +65,12 @@ class Foyer(Piece):
     Effet : Déverouille toutes les portes des couloirs (pièces oranges) actuels et futurs.
     """
 
-    def __init__(self, row, porte_entree_direction=None): 
+    def __init__(self, row,col, porte_entree_direction=None): 
         config = {"nord": True, "sud": True, "est":False, "ouest": False}
         super().__init__(
             nom="Foyer",
             row=row,
+            col=col,
             porte_config=config,
             porte_entree_direction=porte_entree_direction,
             image_path="Images_Blue_Prince/Images/Hallways/Foyer.png", 
@@ -104,7 +108,7 @@ class GreatHall(Piece):
     Un grand couloir dont les portes sont verouillées sauf si le joueur possède un Foyer. 
     """
 
-    def __init__(self, row, porte_entree_direction=None):
+    def __init__(self, row,col, porte_entree_direction=None):
         config = {"nord": True, "sud": True, "est": True, "ouest": True}
 
         # Porte où le joueur est entrée pour ne pas la verouiller
@@ -113,6 +117,7 @@ class GreatHall(Piece):
         super().__init__(
             nom="Great Hall",
             row=row,
+            col=col,
             porte_config=config,
             porte_entree_direction=porte_entree_direction,
             image_path="Images_Blue_Prince/Images/Hallways/Great_Hall.png",
