@@ -61,12 +61,12 @@ class Jeu:
         self.rect_manoir = self.surface_manoir.get_rect(topleft=(50, 50))
 
         # Pièce d'entrée
-        self.entree = EntranceHall()
+        self.entree = EntranceHall(row=8, col=2)
             # Placement de la pièce d'entrée sur la grille
         self.manoir.ajouter_piece(self.entree, ligne=8, colonne=2)
 
         # Pièce de sortie
-        self.sortie = Antechamber()
+        self.sortie = Antechamber(row=0, col=2)
             # Placement de la pièce de sortie sur la grille
         self.manoir.ajouter_piece(self.sortie, ligne=0, colonne=2)
 
@@ -155,7 +155,7 @@ class Jeu:
         
         #  Instancier les 3 pièces
         for classe_piece in classes_tirees:
-            piece = classe_piece(row=ligne_cible,porte_entree_direction=self.direction_entree)
+            piece = classe_piece(row=ligne_cible, col=col_cible, porte_entree_direction=self.direction_entree)
             self.pieces_proposees.append(piece)
 
             
