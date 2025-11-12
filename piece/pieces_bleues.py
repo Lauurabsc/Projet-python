@@ -8,13 +8,14 @@ class Vault(Piece):
     +40 pièces d'or à la découverte
     Pas de porte"""
 
-    def __init__(self, row: int, porte_entree: str):
+    def __init__(self, row: int,col, porte_entree_direction: str):
         config = {"nord": False, "sud": False, "est": False, "ouest": False}
-        config[porte_entree] = True
+        config[porte_entree_direction] = True
 
         super().__init__(
             nom="Vault",
             row=row,
+            col=col,
             porte_config=config,
             image_path="Images_Blue_Prince/Images/Rooms/Vault.png",
             rarete=3,
@@ -23,8 +24,8 @@ class Vault(Piece):
             effet_special = "Donne 40 pièces d'or à la découverte"
         )
     
-    def on_discover(self, joueur, jeu, col, row):
-        super().on_discover(joueur, jeu, col, row)
+    def on_discover(self, joueur, jeu, col, row, direction_entree):
+        super().on_discover(joueur, jeu, col, row, direction_entree)
         joueur.inventaire.ajouter_piece_or(40)
 
 
@@ -34,23 +35,24 @@ class Nook(Piece):
     +1 clé
     Deux portes en L"""
 
-    def __init__(self, row: int, porte_entree: str):
+    def __init__(self, row: int,col, porte_entree_direction: str):
         config = {"nord": False, "sud": False, "est": False, "ouest": False}
-        config[porte_entree] = True
+        config[porte_entree_direction] = True
 
         # Deuxième porte choisie aléatoirement (à l'opposé de l'entrée)
-        if porte_entree == "nord":
+        if porte_entree_direction == "nord":
             config["est"] = True
-        elif porte_entree == "sud":
+        elif porte_entree_direction == "sud":
             config["ouest"] = True
-        elif porte_entree == "est":
+        elif porte_entree_direction == "est":
             config["sud"] = True
-        elif porte_entree == "ouest":
+        elif porte_entree_direction == "ouest":
             config["nord"] = True
 
         super().__init__(
             nom="Nook",
             row=row,
+            col=col,
             porte_config=config,
             image_path="Images_Blue_Prince/Images/Rooms/Nook.png",
             rarete=1,
@@ -59,8 +61,8 @@ class Nook(Piece):
             effet_special = "Contient 1 clé à la découverte"
         )
     
-    def on_discover(self, joueur, jeu, col, row):
-        super().on_discover(joueur, jeu, col, row)
+    def on_discover(self, joueur, jeu, col, row, direction_entree):
+        super().on_discover(joueur, jeu, col, row, direction_entree)
         joueur.inventaire.ajouter_cles(1)
 
 
@@ -70,24 +72,26 @@ class Garage(Piece):
     +3 clés
     Une seule porte (cul-de-sac)"""
 
-    def __init__(self, row: int, porte_entree: str):
+    def __init__(self, row: int, col,porte_entree_direction: str):
         # Une seule porte : celle par laquelle on entre
         config = {"nord": False, "sud": False, "est": False, "ouest": False}
-        config[porte_entree] = True
+        config[porte_entree_direction] = True
 
         super().__init__(
             nom="Garage",
             row=row,
+            col=col,
             porte_config=config,
             image_path="Images_Blue_Prince/Images/Rooms/Garage.png",
             rarete=2,  
             gemmes=1,  
             couleur="bleue",
-            effet_special="Contient 3 clés à la découverte"
+            effet_special="Contient 3 clés à la découverte", 
+            default_orientation="sud"
         )
 
-    def on_discover(self, joueur, jeu, col, row):
-        super().on_discover(joueur, jeu, col, row)
+    def on_discover(self, joueur, jeu, col, row, direction_entree):
+        super().on_discover(joueur, jeu, col, row, direction_entree)
         joueur.inventaire.ajouter_cles(3)
 
 # Pièce Music Room
@@ -97,24 +101,31 @@ class LockerRoom(Piece):
     """Pièce Locker Room
     Plusieurs clés à la découverte répandues dans le manoir"""
 
-    def __init__(self, row: int, porte_entree: str):
+    def __init__(self, row: int, col,porte_entree_direction: str):
         # Deux portes opposées
-        config = {"nord": False, "sud": False, "est": False, "ouest": False}
-        config[porte_entree] = True
+        config = {"nord": True, "sud": True, "est": False, "ouest": False}
+        config[porte_entree_direction] = True
+
+        #Gérer les bordures 
+        if row == 0:
+            config["nord"] = False
+        if row == 8:
+            config["sud"] = False
 
         # La porte opposée 
-        if porte_entree == "nord":
+        if porte_entree_direction == "nord":
             config["sud"] = True
-        elif porte_entree == "sud":
+        elif porte_entree_direction == "sud":
             config["nord"] = True
-        elif porte_entree == "est":
+        elif porte_entree_direction == "est":
             config["ouest"] = True
-        elif porte_entree == "ouest":
+        elif porte_entree_direction == "ouest":
             config["est"] = True
 
         super().__init__(
             nom="Locker Room",
             row=row,
+            col=col,
             porte_config=config,
             image_path="Images_Blue_Prince/Images/Rooms/Locker_Room.png",
             rarete=3,     
@@ -123,8 +134,8 @@ class LockerRoom(Piece):
             effet_special="Ajoute plusieurs clés réparties dans le manoir"
         )
 
-    def on_discover(self, joueur, jeu, col, row):
-        super().on_discover(joueur, jeu, col, row)
+    def on_discover(self, joueur, jeu, col, row, direction_entree):
+        super().on_discover(joueur, jeu, col, row, direction_entree)
 
         # Nombre de clés aléatoire entre 3 et 6 
         nbre_cles = random.randint(3, 6)
@@ -137,13 +148,13 @@ class Den(Piece):
     +1 gemme
     Trois portes en T"""
 
-    def __init__(self, row: int, porte_entree: str):
+    def __init__(self, row: int, col,porte_entree_direction: str):
         # Trois portes : disposition en T (entrée + deux latérales)
         config = {"nord": False, "sud": False, "est": False, "ouest": False}
-        config[porte_entree] = True
+        config[porte_entree_direction] = True
 
         # Ajoute deux autres portes perpendiculaires à l’entrée
-        if porte_entree in ["nord", "sud"]:
+        if porte_entree_direction in ["nord", "sud"]:
             config["est"] = True
             config["ouest"] = True
         else:  # entrée par est ou ouest
@@ -153,6 +164,7 @@ class Den(Piece):
         super().__init__(
             nom="Den",
             row=row,
+            col=col,
             porte_config=config,
             image_path="Images_Blue_Prince/Images/Rooms/Den.png",
             rarete=1,        
@@ -161,8 +173,8 @@ class Den(Piece):
             effet_special="Contient 1 gemme à la découverte"
         )
 
-    def on_discover(self, joueur, jeu, col, row):
-        super().on_discover(joueur, jeu, col, row)
+    def on_discover(self, joueur, jeu, col, row, direction_entree):
+        super().on_discover(joueur, jeu, col, row, direction_entree)
         joueur.inventaire.ajouter_gemmes(1)
 
 
