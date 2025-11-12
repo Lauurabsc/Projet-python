@@ -11,8 +11,8 @@ class Piece :
     """
 
 
-    def __init__(self, nom, row, porte_config, gemmes=0, rarete=0, image_path=None,
-             objets=None, effet_special=None, condition_placement=None, couleur=None, porte_entree_direction=None):
+    def __init__(self, nom, row,col, porte_config, gemmes=0, rarete=0, image_path=None,
+             objets=None, effet_special=None, condition_placement=None, couleur=None, porte_entree_direction=None,default_orientation=None):
 
 
         self.nom = nom
@@ -23,10 +23,6 @@ class Piece :
         self.condition_placement = condition_placement
         self.couleur = couleur
         self.image_path = image_path
-
-
-
-
         self.position =(None, None)
         self.est_decouverte = False
 
@@ -51,14 +47,52 @@ class Piece :
 
 
         # Charge l'image de la pièce
-        self.image_surface = pygame.image.load(image_path)
-        self.image_surface = pygame.transform.scale(self.image_surface, (TAILLE_CASE, TAILLE_CASE))
+        original_surface = pygame.image.load(image_path)
 
+        # Appliquer la rotation si nécessaire
+        rotated_surface = self.rotate_image_if_needed(
+            original_surface, 
+            default_orientation, 
+            porte_entree_direction
+        )
+        self.image_surface = pygame.transform.scale(rotated_surface, (TAILLE_CASE, TAILLE_CASE))
 
         # Gère la position en PIXELS de la pièce sur l'écran
-
-
         self.rect = self.image_surface.get_rect()
+        
+    def rotate_image_if_needed(self, surface, default_orientation, new_direction):
+        """
+        Fait pivoter la surface de l'image si la direction d'entrée 
+        ne correspond pas à l'orientation par défaut de l'image.
+        
+        Suppose que l'orientation par défaut est "sud" (le bas de l'image).
+        """
+        # Si l'image n'a pas d'orientation (symétrique) ou si on est dans la bonne direction
+        if not default_orientation or not new_direction or default_orientation == new_direction:
+            return surface # Pas de rotation
+
+        # On définit que l'orientation par défaut de nos images est "sud" (le bas)
+        orientation_map = {
+            "sud": 0,    # L'image de base pointe vers le sud
+            "est": 90,   # Pour entrer par l'ouest, tourner de 90° anti-horaire
+            "nord": 180,   # Pour entrer par le nord, tourner de 180°
+            "ouest": 270     # Pour entrer par l'est, tourner de 270° (ou -90°)
+        }
+
+
+        # Angle de l'image de base
+        default_angle = orientation_map[default_orientation]
+        # Angle de la nouvelle porte d'entrée
+        new_angle = orientation_map[new_direction]
+            
+        # L'angle de rotation est la différence
+        rotation_angle = new_angle - default_angle
+            
+        if rotation_angle != 0:
+            return pygame.transform.rotate(surface, rotation_angle)
+        else:
+            return surface
+
    
     def set_position_pixels(self, col,row):
         """Met à jour la position logique (grille) et
