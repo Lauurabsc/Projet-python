@@ -28,9 +28,8 @@ class EntranceHall(Piece):
             couleur = None
         )
 
-        for porte in self.portes.values():
-            if porte is not None:
-                porte.niveau_verouillage = 0
+        for direction in self.portes:
+            self.portes[direction] = Porte(row, force_unlocked=True)
 
 class Antechamber(Piece): 
     """Pièce 'Anterchamber"
