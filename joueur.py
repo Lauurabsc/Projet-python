@@ -1,7 +1,9 @@
 import pygame
+
 from Inventaire import Inventaire
-from piece.piece import Piece 
+from piece.piece import Piece
 from porte import Porte
+
 
 class Joueur : 
     """
@@ -66,20 +68,18 @@ class Joueur :
         if porte is None:
             return "MOUVEMENT_ECHOUE", None
         
-        # Vérifier si la porte est vérrouillé
+        # Vérifier si la porte est vérrouillée
         # A faire : Gérer l'utilisation des clés et kit de corchetage
         if porte.est_verouillee():
-
             niveau_porte = porte.niveau_verouillage
             a_le_kit = "Lockpick" in self.inventaire.objets_permanents
 
             # Logique pour le niveau 1
             if niveau_porte == 1:
-
                 if a_le_kit:
                     porte.niveau_verouillage = 0 # On déverrouille la porte
                 # Sinon, on vérifie si le joueur a une clé
-                elif self.inventaire.depense_cle(1): 
+                elif self.inventaire.depense_cle(): 
                     print("Porte (Niv 1) ouverte avec 1 Clé.")
                     porte.niveau_verouillage = 0
                 else:
@@ -89,17 +89,12 @@ class Joueur :
             # Logique pour le niveau 2
             elif niveau_porte == 2:
                 # Le kit ne fonctionne pas ici 
-                if self.inventaire.depense_cle(1):
+                if self.inventaire.depense_cle(2):
                     print("Porte (Niv 2) ouverte avec 1 Clé.") 
                     porte.niveau_verouillage = 0
                 else:
                     print("Porte (Niv 2) verrouillée. Clé requise.")
                     return "MOUVEMENT_ECHOUE", None
-            
-            # Logique pour les portes scellées (Antechamber)
-            elif niveau_porte == "scellee":
-                print("Cette porte est scellée.") 
-                return "MOUVEMENT_ECHOUE", None
 
         # La porte est accessible
         piece_cible = manoir.grille[target_ligne][target_colonne]
