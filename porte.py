@@ -30,20 +30,20 @@ class Porte :
         """
         Définit aléatoirement le niveau de verrouillage en fonction de la rangée.
 
-        La difficulté (probabilité de verrous) augmente avec le numéro de
-        la rangée, en suivant les règles du projet :
-        - Rangée 0 : Toujours niveau 0.
-        - Rangée 8 : Toujours niveau 2.
+        La difficulté (probabilité de verrous) augmente lorsque le numéro de
+        la rangée diminue, en suivant les règles du projet :
+        - Rangée 8 : Toujours niveau 0.
+        - Rangée 0 : Toujours niveau 2.
         - Rangées 1-7 : Probabilité progressive basée sur un tirage.
 
         :param row: (int) Le numéro de la rangée (0-8) où la porte se situe.
         """
         # Première rangée --> que des portes dévérouillées
-        if row == 0 :
+        if row == 8 :
             self.niveau_verouillage = 0
 
         #Dernière rangée --> que des portes verouillées à double tour
-        elif row == 8 :
+        elif row == 0 :
             self.niveau_verouillage = 2
 
         #Rangée intermédiaire : Plus la rangée augmente, plus la proba d'avoir des niveaux élevées augmente
@@ -51,16 +51,17 @@ class Porte :
             poids_total = 12
             tirage = random.randint(1, poids_total) #Lance un dé de 1 à 12
             # Division des 12 résultats en 3 tranches
-            # Tranche 2 : Difficile
-            seuil_lvl_2 = row
             # Tranche 1 : Moyen
-            seuil_lvl_1 = seuil_lvl_2 + 4
+            seuil_lvl_1 = row
+            # Tranche 2 : Difficile
+            seuil_lvl_2 = seuil_lvl_1 + 2
             # Tranche 0 : le reste
+            
             # Si le dé tombe sur la première tranche --> vérouillé à double tour
-            if tirage <= seuil_lvl_2 :
+            if tirage >= seuil_lvl_2 :
                 self.niveau_verouillage = 2
             # Si le dé tombe sur la tranche 2 : porte vérouillée
-            elif tirage <= seuil_lvl_1 :
+            elif tirage >= seuil_lvl_1 :
                 self.niveau_verouillage = 1
             #Si le dé n'est tombé sur aucune des deux tranches : porte dévérouillé
             else :
