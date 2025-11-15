@@ -1,13 +1,20 @@
-import random 
-from piece.pieceorange import Hallway, SecretPassage, Foyer, GreatHall
-from piece.pieceviolette import Bedrooms, GuestBedroom, ServantsQuarters, MasterBedroom
-from piece.pieces_bleues import Vault, Nook, Garage, LockerRoom, Den
+import random
+
+from piece.pieces_oranges import Corridor, Foyer, Hallway, PassageWay
+from piece.pieces_bleues import (Den, Garage, Nook, RampusRoom, TrophyRoom,
+                                 Vault)
+from piece.pieces_vertes import Cloister, Courtyard
+from piece.pieces_violettes import (Bedrooms, GuestBedroom, MasterBedroom,
+                                 ServantsQuarters)
 
 class Pioche : 
     """
     Gère la pioche des pièces, la rareté et le tirage.
     """
+    class_piece_list = [Bedrooms, GuestBedroom, ServantsQuarters, MasterBedroom, Foyer, Hallway, PassageWay, Corridor, Den, Garage, Nook, Vault,  RampusRoom, TrophyRoom, Courtyard, Cloister]
+    
     def __init__(self):
+        
         # On stockes les classes de pièces
         self.pieces_disponibles = self.creer_pioche_initiale()
 
@@ -17,43 +24,46 @@ class Pioche :
         """
         pioche = []
 
-        # Rareté 1 
-        pioche.extend([Hallway] * 10)         # Orange
-        pioche.extend([Bedrooms] * 5)         # Violette
-        pioche.extend([GuestBedroom] * 5)     # Violette
-        pioche.extend([Nook] * 5)             # Bleue
-        pioche.extend([Den] * 5)              # Bleue
-
-        # Rareté 2
-        pioche.extend([SecretPassage] * 5)    # Orange
-        pioche.extend([ServantsQuarters] * 3) # Violette
-        pioche.extend([Garage] * 3)           # Bleue
-
-        # Rareté 3
-        pioche.extend([Foyer] * 2)            # Orange
-        pioche.extend([GreatHall] * 2)        # Orange
-        pioche.extend([MasterBedroom] * 2)    # Violette
-        pioche.extend([Vault] * 2)            # Bleue
-        pioche.extend([LockerRoom] * 2)       # Bleue
-
-        # TO DO : Ajouter les autres pièces
-
+        for piece in self.class_piece_list:
+            pioche.extend([piece]*(6//piece.rarete))
+        
         return pioche
 
-    def tirer_trois_pieces(self, ligne_cible): 
+    def tirer_trois_pieces(self, contrainte_dict, is_bordure): 
         """
         Tire trois pièces valides de la pioche.
-        C'est ici qu'on gère la rareté et les conditions.
+        C'est ici qu'on gère les conditions d'éligibilité
+        Retourne aussi l'angle de rotation à appliquer à la pièce
         """
-
-        # A Ajouter : logique de rareté, une piece coute 0 gemmes, Verifier conditions de placement
 
         if len(self.pieces_disponibles) < 3:
             return []
-            
-        classes_tirees = random.sample(self.pieces_disponibles, 3)
-        return classes_tirees
         
+        # Exclure les pieces non accessibles
+        class_piece_eligible = {}
+        for class_piece in self.class_piece_list:
+            piece = class_piece()
+            is_eligible, angle = piece.est_eligible(contrainte_dict, is_bordure)
+            if is_eligible:
+                class_piece_eligible[class_piece] = angle        
+        pieces_eligibles = [piece for piece in self.pieces_disponibles if piece in class_piece_eligible.keys()]
+        
+        classes_tirees = random.sample(pieces_eligibles, 3)
+        # Verification si une piece coûte 0 gemmes
+        for piece_class in classes_tirees:
+            if piece_class.gemmes == 0:
+                piece_tiree_1 = [classes_tirees[0],class_piece_eligible[classes_tirees[0]]]
+                piece_tiree_2 = [classes_tirees[1],class_piece_eligible[classes_tirees[1]]]
+                piece_tiree_3 = [classes_tirees[2],class_piece_eligible[classes_tirees[2]]]
+                return [piece_tiree_1, piece_tiree_2, piece_tiree_3]
+        
+        classes_eligibles_gratuites = [piece for piece in pieces_eligibles if piece.gemmes == 0 ]
+        classes_tirees[-1] = random.sample(classes_eligibles_gratuites, 1)[0]
+        piece_tiree_1 = [classes_tirees[0],class_piece_eligible[classes_tirees[0]]]
+        piece_tiree_2 = [classes_tirees[1],class_piece_eligible[classes_tirees[1]]]
+        piece_tiree_3 = [classes_tirees[2],class_piece_eligible[classes_tirees[2]]]
+        return [piece_tiree_1, piece_tiree_2, piece_tiree_3]
+    
     def retirer_piece(self, classe_piece): 
         """
         Retire une pièce de la pioche après qu'elle a été choisie
