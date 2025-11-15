@@ -1,5 +1,5 @@
 import pygame
-
+import random
 from porte import Porte
 
 TAILLE_CASE = 70
@@ -128,8 +128,51 @@ class Piece :
             fenetre.blit(self.image_surface, self.rect)
 
     def on_enter(self, joueur):
-        """ Méthode appelée quand le joueur entre dans la pièce."""
+        """ Méthode appelée quand le joueur entre dans la pièce.
+        Gère l'apparition ALÉATOIRE des objets listés dans self.objets.
+        """
         print(f"Le joueur entre dans : {self.nom}")
+
+        a_la_patte = "Patte_Lapin" in joueur.inventaire.objets_permanents
+        a_le_detecteur = "Detecteur_Metal" in joueur.inventaire.objets_permanents
+
+        map_objet_action = {
+            "Pomme": lambda: joueur.inventaire.ajouter_pas(2), 
+            "Gemme": lambda: joueur.inventaire.ajouter_gemmes(1),
+            "Clé": lambda: joueur.inventaire.ajouter_cles(1),
+            "Dé": lambda: joueur.inventaire.ajouter_des(1),
+            "Or": lambda: joueur.inventaire.ajouter_piece_or(1), 
+            
+            # Objets permanents 
+            "Kit_crochetage": lambda: joueur.inventaire.ajouter_objet_permanent("Kit_crochetage"),
+            "Detecteur_Metal": lambda: joueur.inventaire.ajouter_objet_permanent("Detecteur_Metal"),
+            "Patte_Lapin": lambda: joueur.inventaire.ajouter_objet_permanent("Patte_Lapin"),
+        }
+
+        for nom_objet in self.objets:
+    
+            if nom_objet in map_objet_action:
+                
+                chance_de_base = 0.5 # 30% de base
+                
+
+                if a_la_patte:
+                    chance_de_base += 0.40 # Bonus de 20% 
+                    
+
+                if a_le_detecteur and nom_objet in ["cles", "piece_or"]:
+                    chance_de_base += 0.40 # Bonus de 25% 
+
+                if random.random() < chance_de_base:
+                    if nom_objet in ["kit_crochetage", "detecteur_metal", "patte_lapin"]:
+                        if nom_objet not in joueur.inventaire.objets_permanents:
+                            action = map_objet_action[nom_objet]
+                            action()
+                    
+                    else:
+                        action = map_objet_action[nom_objet]
+                        action()
+
         pass
 
     def on_draft(self, joueur, jeu):

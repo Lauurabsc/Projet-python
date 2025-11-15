@@ -11,7 +11,7 @@ class Bedrooms(Piece):
     image_path="Images_Blue_Prince/Images/Bedrooms/Bedroom.png"
     couleur="violette"
     nom="Bedrooms"
-    objets=['gemmes','pommes','cles','des']
+    objets=['Gemme','Pomme','Clé','Dé']
     def __init__(self):
         config = {"nord": False, "sud": True, "est": False, "ouest": True}
 
@@ -39,7 +39,7 @@ class GuestBedroom(Piece):
     image_path = "Images_Blue_Prince/Images/Bedrooms/Guest_Bedroom.png"
     nom = "GestBedroom"
     couleur ="violette"
-    objets = ['cles', 'gemmes']
+    objets = ['Clé', 'Gemme','LockPick']
     def __init__(self):
         config = {"nord": False, "sud": True, "est": False, "ouest": False}
         super().__init__(
@@ -67,7 +67,7 @@ class ServantsQuarters(Piece):
     image_path = "Images_Blue_Prince/Images/Bedrooms/Servants_Quarters.png"
     nom = "ServantsQuarters"
     couleur ="violette"
-    objets = ['des', 'gemmes', 'detecteur_metal']
+    objets = ['Dé', 'Gemme', 'Detecteur_Metal','LockPick']
     def __init__(self):
         config = {"nord": False, "sud": True, "est": False, "ouest": False}
         super().__init__(
@@ -107,7 +107,7 @@ class MasterBedroom(Piece):
     image_path = "Images_Blue_Prince/Images/Bedrooms/Master_Bedroom.png"
     nom = "MasterBedroom"
     couleur ="violette"
-    objets = ['des', 'cles', 'gemmes', 'kit_crochetage']
+    objets = ['Dé', 'Clé', 'Gemme', 'LockPick']
     def __init__(self):
         config = {"nord": False, "sud": True, "est": False, "ouest": False}
         super().__init__(

@@ -78,7 +78,7 @@ class Jeu:
             self.rect_inventaire.left,    
             self.rect_inventaire.bottom + 50, 
             self.rect_inventaire.width,  
-            400                          
+            380                         
         )
 
         
@@ -238,13 +238,14 @@ class Jeu:
             # Afficher les 3 pièces proposées
             texte_choix = self.font_titre.render("Choisissez une pièce (1, 2, 3) :", True, (255, 255, 0))
             self.fenetre.blit(texte_choix, (self.rect_choix_piece.x + 10, self.rect_choix_piece.y + 10))
+            
 
             texte_relance = self.font_titre.render("Vous pouvez refaire un tirage en appuyant sur 'b' (consomme un dé)", True, (255, 255,0))
-            self.fenetre.blit(texte_relance, (self.rect_choix_piece.x + 10, self.rect_choix_piece.y + 325))
-
+            self.fenetre.blit(texte_relance, (self.rect_choix_piece.x + 10, self.rect_choix_piece.bottom - 30))
             
             # Affichage des 3 pièces
             card_width = 180
+
             card_height = 250
             card_y = self.rect_choix_piece.y + 60
             x_start = self.rect_choix_piece.x + 100
@@ -257,25 +258,26 @@ class Jeu:
                 # Dessine le cadre
                 pygame.draw.rect(self.fenetre, self.COULEUR_CADRE, rect_card, 1)
 
-                # Afficher l'image
                 img_scaled = pygame.transform.scale(piece.image_surface, (card_width - 20, card_width - 20))
                 self.fenetre.blit(img_scaled, (card_x + 10, card_y + 10))
- 
+
+                
                 # Afficher le nom
                 nom_texte = self.font_normal.render(piece.nom, True, self.COULEUR_CADRE)
                 self.fenetre.blit(nom_texte, (card_x + 10, card_y + card_width))
                 
+                # Affichier le coût en gemmes
+                texte_cout = self.font_normal.render(f'Coût : {str(piece.gemmes)} gemme(s)', True, self.COULEUR_CADRE)
+                self.fenetre.blit(texte_cout, (card_x + 10, card_y + card_width + 20))
+
                 # Afficher le numéro de choix
                 num_texte = self.font_titre.render(str(i+1), True, (255, 255, 0))
-                self.fenetre.blit(num_texte, (card_x + (card_width // 2) - 5, card_y + card_height - 30))
-                
-                # Affichier le coût en gemmes
-                texte = self.font_normal.render(f'Coût : {str(piece.gemmes)} gemme(s)', True, self.COULEUR_CADRE)
-                self.fenetre.blit(texte, (card_x + 10, card_y + card_width + 20))
-            
+                self.fenetre.blit(num_texte, (card_x + (card_width // 2) - 5, card_y + card_height - 30)) 
+
             if self.statut == 'DE_INSUFFISANT':
                 texte_erreur = self.font_titre.render("Vous n'avez pas assez de dé", True, (255, 0, 0))
-                self.fenetre.blit(texte_erreur, (self.rect_choix_piece.x + 250, self.rect_choix_piece.y + 200) )
+                rect_erreur = texte_erreur.get_rect(center=self.rect_choix_piece.center)
+                self.fenetre.blit(texte_erreur, rect_erreur)
                 self.statut = None
     
     def dessiner_curseur_action(self, surface): 

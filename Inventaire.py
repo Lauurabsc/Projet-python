@@ -36,6 +36,7 @@ class Inventaire:
             "Clé": self.charger_image("Key.png", dossier_consommable),
             "Dé": self.charger_image("Dice.png", dossier_consommable),
 
+            "Pomme": self.charger_image("pomme.png", dossier_consommable),
             "Kit_crochetage": self.charger_image("Lockpick.png", dossier_permanent),
             "Detecteur_Metal": self.charger_image("Metal_Detector.png", dossier_permanent),
             "Patte_Lapin": self.charger_image("Rabbit_Foot.png", dossier_permanent)

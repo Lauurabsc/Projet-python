@@ -10,7 +10,7 @@ class Hallway(Piece):
     image_path="Images_Blue_Prince/Images/Hallways/Hallway.png"
     nom="Hallway"
     couleur="orange"
-    objets=['pommes','gemmes']
+    objets=['Pomme','Gemme']
     def __init__(self): 
         config = {"nord": False, "sud": True, "est": True, "ouest": True}
         super().__init__(
@@ -35,7 +35,7 @@ class Foyer(Piece):
     image_path = "Images_Blue_Prince/Images/Hallways/Foyer.png"
     nom = "Foyer"
     couleur ="orange"
-    objets = ['gemmes', 'kit_crochetage', 'patte_lapin']
+    objets = ['Gemme', 'Lockpick', 'Patte_Lapin']
     def __init__(self):
         config = {"nord": True, "sud": True, "est": False, "ouest": False}
         super().__init__(

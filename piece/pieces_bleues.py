@@ -39,7 +39,7 @@ class Nook(Piece):
     rarete=1
     gemmes=0
     couleur="bleue"
-    objets = ['des']
+    objets = ['Dé']
     def __init__(self):
         config = {"nord": False, "sud": True, "est": False, "ouest": True}
 
@@ -69,7 +69,7 @@ class Garage(Piece):
     rarete=2
     gemmes=1
     couleur="bleue"
-    objets = ['crochetage_kit','detecteur_metal']
+    objets = ['Lockpick','Detecteur_Metal']
     def __init__(self):
         # Une seule porte : celle par laquelle on entre
         config = {"nord": False, "sud": True, "est": False, "ouest": False}
@@ -100,7 +100,7 @@ class Den(Piece):
     rarete=1   
     gemmes=0   
     couleur="bleue"
-    objets=['des','patte_lapin']
+    objets=['Dé','Patte_Lapin']
     def __init__(self):
         # Trois portes : disposition en T (entrée + deux latérales)
         config = {"nord": False, "sud": True, "est": True, "ouest": True}
@@ -129,7 +129,7 @@ class RampusRoom(Piece):
     image_path = "Images_Blue_Prince/Images/Rooms/Rumpus_Room.png"
     nom = "RumpusRoom"
     couleur ="bleue"
-    objets = ['des', 'kit_crochetage', 'patte_lapin']  
+    objets = ['Dé', 'Lockpick', 'Patte_Lapin']  
     def __init__(self):
         config = {"nord": True, "sud": True, "est": False, "ouest": False}
         super().__init__(
@@ -152,7 +152,7 @@ class TrophyRoom(Piece):
     image_path = "Images_Blue_Prince/Images/Rooms/Trophy_Room.png"
     nom = "TrophyRoom"
     couleur ="bleue"
-    objets = ['des', 'kit_crochetage']  
+    objets = ['Dé', 'Lockpick']  
     def __init__(self):
         config = {"nord": False, "sud": True, "est": False, "ouest": True}
         super().__init__(
