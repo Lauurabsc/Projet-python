@@ -1,8 +1,6 @@
 import pygame
 
 from Inventaire import Inventaire
-from piece.piece import Piece
-from porte import Porte
 
 
 class Joueur : 
@@ -14,8 +12,10 @@ class Joueur :
         - Les méthodes de déplacement 
         - Elle possède un objet inventaire
     """
-
-    def __init__(self, ligne_depart, colonne_depart):
+    
+    EFFECTS_LIST = ['deverouillage_foyer']
+    
+    def __init__(self, ligne_depart:int, colonne_depart:int):
 
         """
         Initialise le joueur.
@@ -38,8 +38,8 @@ class Joueur :
         
         :param direction: "nord", "sud", "ouest", "est"
         :param manoir: l'objet Manoir pour vérifier la grille
-        :return: (str, tuple) ou (str, None)
-                 - ("MOUVEMENT_ECHOUE", None) : Mur, hors grille, porte verrouillée
+        :return: (str, tuple)
+                 - ("MOUVEMENT_ECHOUE", (None, None) : Mur, hors grille, porte verrouillée
                  - ("MOUVEMENT_REUSSI", (new_ligne, new_col)) : Déplacement vers une pièce connue
                  - ("DECOUVERTE", (new_ligne, new_col)) : Ouvre une porte vers une case vide
         """
@@ -61,15 +61,14 @@ class Joueur :
         # Vérifier les limites de la grille
 
         if not (0 <= target_ligne < manoir.lignes and 0 <= target_colonne < manoir.colonnes):
-            return "MOUVEMENT_ECHOUE", None
+            return "MOUVEMENT_ECHOUE", (None, None)
         
         # Vérifier si la pièce actuelle a une porte dans cette direction
         porte = piece_actuelle.portes.get(direction)
         if porte is None:
-            return "MOUVEMENT_ECHOUE", None
+            return "MOUVEMENT_ECHOUE", (None, None)
         
         # Vérifier si la porte est vérrouillée
-        # A faire : Gérer l'utilisation des clés et kit de corchetage
         if porte.est_verouillee():
             niveau_porte = porte.niveau_verouillage
             a_le_kit = "Lockpick" in self.inventaire.objets_permanents
@@ -84,17 +83,17 @@ class Joueur :
                     porte.niveau_verouillage = 0
                 else:
                     print("Porte (Niv 1) verrouillée. Clé ou Kit requis.")
-                    return "MOUVEMENT_ECHOUE", None
+                    return "MOUVEMENT_ECHOUE", (None, None)
 
             # Logique pour le niveau 2
             elif niveau_porte == 2:
                 # Le kit ne fonctionne pas ici 
                 if self.inventaire.depense_cle(2):
-                    print("Porte (Niv 2) ouverte avec 1 Clé.") 
+                    print("Porte (Niv 2) ouverte avec 2 Clés.") 
                     porte.niveau_verouillage = 0
                 else:
                     print("Porte (Niv 2) verrouillée. Clé requise.")
-                    return "MOUVEMENT_ECHOUE", None
+                    return "MOUVEMENT_ECHOUE", (None, None)
 
         # La porte est accessible
         piece_cible = manoir.grille[target_ligne][target_colonne]
@@ -115,7 +114,7 @@ class Joueur :
         self.ligne = ligne
         self.colonne = colonne
         self.inventaire.consommer_pas()
-        print(f"Joueur déplacé en ({ligne}, {colonne}). Pas restants : {self.inventaire.pas}")
+        print(f"Joueur déplacé en ({ligne}, {colonne}).")
     
 
     def dessiner_curseur(self, surface_manoir, taille_case, couleur):
@@ -126,3 +125,9 @@ class Joueur :
         rect_joueur_y = self.ligne * taille_case
         
         pygame.draw.rect(surface_manoir,couleur,(rect_joueur_x, rect_joueur_y, taille_case, taille_case),3)
+        
+    def ajouter_effets(self, effet):
+        """Ajoute un effet au joueur
+        """
+        if effet in self.EFFECTS_LIST:
+            self.effets_actifs[effet]= True
