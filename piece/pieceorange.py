@@ -3,98 +3,61 @@ from porte import Porte
 
 
 class Hallway(Piece): 
-    """Pièce Hallway 
-    La pièce la plus simple, avec 4 portes
+    """Pièce Hallway
     """
-    def __init__(self, row, col,  porte_entree_direction=None): 
-        config = {"nord": True, "sud": True, "est": True, "ouest": True}
+    rarete = 1
+    gemmes = 0
+    image_path="Images_Blue_Prince/Images/Hallways/Hallway.png"
+    nom="Hallway"
+    couleur="orange"
+    objets=['pommes','gemmes']
+    def __init__(self): 
+        config = {"nord": False, "sud": True, "est": True, "ouest": True}
+        super().__init__(
+            nom=self.nom,
+            porte_config=config,
+            image_path=self.image_path, 
+            rarete=self.rarete,
+            gemmes=self.gemmes,
+            objets=self.objets,
+            couleur=self.couleur
+        )
+    def on_discover(self, joueur, manoir, col, row):
+        super().on_discover(joueur, manoir, col, row)
+        # Faire aléatoire présence de pomme ou gemmes dans la pièce 
+        
+# Foyer
+class Foyer(Piece):
+    """"pièce Foyer
+    """
+    rarete = 2
+    gemmes = 2
+    image_path = "Images_Blue_Prince/Images/Hallways/Foyer.png"
+    nom = "Foyer"
+    couleur ="orange"
+    objets = ['gemmes', 'kit_crochetage', 'patte_lapin']
+    def __init__(self):
+        config = {"nord": True, "sud": True, "est": False, "ouest": False}
+        super().__init__(
+            nom=self.nom,
+            porte_config=config,
+            image_path=self.image_path,
+            rarete=self.rarete,
+            gemmes=self.gemmes,
+            objets=self.objets,
+            couleur=self.couleur
+        )
     
-        super().__init__(
-            nom="Hallway",
-            row=row,
-            col=col,
-            porte_config=config,
-            porte_entree_direction=porte_entree_direction,
-            image_path="Images_Blue_Prince/Images/Hallways/Hallway.png", 
-            gemmes=0,
-            rarete=1, 
-            objets=None,
-            effet_special=None,
-            condition_placement=None,
-            couleur="orange"
-        )
-
-class SecretPassage(Piece): 
-    """Pièce 'Secret passage'
-    Pièce sans issue qui déclenche un choix de 3 pièce après selection d'une couleur
-    """
-    
-    def __init__(self, row,col, porte_entree_direction="sud"): 
-
-        config = {"nord": False, "sud": False, "est": False, "ouest": False}
-        if porte_entree_direction:
-            config[porte_entree_direction] = True
-
-        super().__init__(
-            nom="Secret Passage",
-            row=row,
-            col=col,
-            porte_config=config,
-            porte_entree_direction=porte_entree_direction,
-            image_path="Images_Blue_Prince/Images/Hallways/Secret_Passage.png", # Supposition
-            gemmes=0,
-            rarete=2, 
-            objets=None,
-            effet_special="Déclenche un draft de couleur spécial",
-            condition_placement=None,
-            couleur="orange", 
-            default_orientation="sud"
-        )
-
-    def on_enter(self, joueur, jeu): 
-        """Effet activé à l'entrée du joueur"""
-        super().on_enter(joueur, jeu)
-
-        # A ajouter dans jeu.py : La logique du jeu (choix du livre, génération des 3 salles et des 2 sécurité doit etre dans la fonction de l'objet 'jeu')
-
-        pass
-
-
-class Foyer(Piece): 
-    """Pièce 'Foyer'
-    Effet : Déverouille toutes les portes des couloirs (pièces oranges) actuels et futurs.
-    """
-
-    def __init__(self, row,col, porte_entree_direction=None): 
-        config = {"nord": True, "sud": True, "est":False, "ouest": False}
-        super().__init__(
-            nom="Foyer",
-            row=row,
-            col=col,
-            porte_config=config,
-            porte_entree_direction=porte_entree_direction,
-            image_path="Images_Blue_Prince/Images/Hallways/Foyer.png", 
-            gemmes=1, 
-            rarete=3,
-            objets=None,
-            effet_special="Déverrouille toutes les portes des couloirs",
-            condition_placement=None,
-            couleur="orange"
-        )
-
-    def on_draft(self, joueur, jeu): 
-
-        """Effect activé au moment du choix
-        1. Ajoute un drpaeua permanent au joueur
-        2. Déverouille tous les couloirs déjà posés
+    def on_discover(self, joueur, manoir, row, col): 
         """
-
-        if not hasattr(joueur, "effet_actifs"): 
-            joueur.effet_actifs = {}
-        joueur.effet_actifs["deverouillage_foyer"] = True
+        Le joueur obtient l'effet 'deverrouillage foyer' qui déverrouille toutes les portes des pièces oranges existantes
+        et toutes les futures.
+        """
+        
+        joueur.ajouter_effets('deverouillage_foyer')
 
         # Parcourt la grille pour dévérouiller les pièces oranges 
-        for r in jeu.manoir.grille : 
+        for r in manoir.grille : 
             for piece in r : 
                 if piece and piece.couleur == "orange": 
                     print(f"Déverrouillage des portes de {piece.nom}")
@@ -102,61 +65,56 @@ class Foyer(Piece):
                         if porte is not None : 
                             porte.niveau_verouillage = 0 
 
-
-class GreatHall(Piece): 
-    """Pièce 'Great Hall'
-    Un grand couloir dont les portes sont verouillées sauf si le joueur possède un Foyer. 
+# PassageWay
+class PassageWay(Piece):
+    """"pièce Passage way
     """
-
-    def __init__(self, row,col, porte_entree_direction=None):
+    rarete = 1
+    gemmes = 2
+    image_path = "Images_Blue_Prince/Images/Hallways/Passageway.png"
+    nom = "Passageway"
+    couleur ="orange"
+    objets = [] # reste vide 
+    def __init__(self):
         config = {"nord": True, "sud": True, "est": True, "ouest": True}
-
-        # Porte où le joueur est entrée pour ne pas la verouiller
-        self.porte_entree_direction = porte_entree_direction
-
         super().__init__(
-            nom="Great Hall",
-            row=row,
-            col=col,
+            nom=self.nom,
             porte_config=config,
-            porte_entree_direction=porte_entree_direction,
-            image_path="Images_Blue_Prince/Images/Hallways/Great_Hall.png",
-            gemmes=1, 
-            rarete=3, 
-            objets=None,
-            effet_special="Portes verrouillées sans Foyer",
-            condition_placement=None,
-            couleur="orange"
+            image_path=self.image_path,
+            rarete=self.rarete,
+            gemmes=self.gemmes,
+            objets=self.objets,
+            couleur=self.couleur
         )
 
-    def on_discover(self, joueur, jeu, col, row, direction_entree) :
-        """
-        Effet activé à la pose d
-        Vérifie si le joueur à l'effet "Foyer". 
-        """
+# Corridor
+class Corridor(Piece):
+    """"pièce Corridor
+    """
+    rarete = 1
+    gemmes = 0
+    image_path = "Images_Blue_Prince/Images/Hallways/Corridor.png"
+    nom = "Corridor"
+    couleur ="orange"
+    objets = [] # reste vide 
+    def __init__(self):
+        config = {"nord": True, "sud": True, "est": False, "ouest": False}
+        super().__init__(
+            nom=self.nom,
+            porte_config=config,
+            image_path=self.image_path,
+            rarete=self.rarete,
+            gemmes=self.gemmes,
+            objets=self.objets,
+            couleur=self.couleur
+        )
 
-        self.porte_entree_direction = direction_entree
+    def generate_portes(self, joueur, ligne, direction_entree):
+        # porte forcément déverrouillée pour cette piece
+        for direction, est_presente in self.porte_config.items():
+            if est_presente:
+                self.portes[direction] = Porte(ligne=ligne, force_unlocked=True)
 
-        super().on_discover(joueur, jeu, col, row,direction_entree)
 
-        # Verification si le joueur a l'effet du Foyer
-
-        if hasattr(joueur, "effet_actifs"):
-            a_le_foyer = joueur.effet_actifs.get("deverouillage_foyer", False)
-        else:
-            a_le_foyer = False
-
-        if a_le_foyer :
-
-            for porte in self.portes.values(): 
-                if porte is not None: 
-                    porte.niveau_verouillage = 0
-        else : 
-            for direction, porte in self.portes.items(): 
-                if porte is not None : 
-                    if direction == self.porte_entree_direction: 
-                        porte.niveau_verouillage = 0 
-                    else : 
-                        porte.niveau_verouillage = 1
 
 

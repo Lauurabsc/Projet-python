@@ -1,31 +1,31 @@
 from piece.piece import Piece
-import random
+
 
 # Pièce Vault
-# +40 or, rarete 3, cost 3gemmes, 
 class Vault(Piece):
     """Pièce Vault
     +40 pièces d'or à la découverte
     Pas de porte"""
-
-    def __init__(self, row: int,col, porte_entree_direction: str):
-        config = {"nord": False, "sud": False, "est": False, "ouest": False}
-        config[porte_entree_direction] = True
+    nom="Vault"
+    image_path="Images_Blue_Prince/Images/Rooms/Vault.png"
+    rarete=3
+    gemmes=3
+    couleur="bleue"
+    def __init__(self):
+        config = {"nord": False, "sud": True, "est": False, "ouest": False}
 
         super().__init__(
-            nom="Vault",
-            row=row,
-            col=col,
+            nom=self.nom,
             porte_config=config,
-            image_path="Images_Blue_Prince/Images/Rooms/Vault.png",
-            rarete=3,
-            gemmes=3,
-            couleur="bleue",
+            image_path=self.image_path,
+            rarete=self.rarete,
+            gemmes=self.gemmes,
+            couleur=self.couleur,
             effet_special = "Donne 40 pièces d'or à la découverte"
         )
     
-    def on_discover(self, joueur, jeu, col, row, direction_entree):
-        super().on_discover(joueur, jeu, col, row, direction_entree)
+    def on_discover(self, joueur, manoir, col, row):
+        super().on_discover(joueur, manoir, col, row)
         joueur.inventaire.ajouter_piece_or(40)
 
 
@@ -34,35 +34,28 @@ class Nook(Piece):
     """Pièce Nook
     +1 clé
     Deux portes en L"""
-
-    def __init__(self, row: int,col, porte_entree_direction: str):
-        config = {"nord": False, "sud": False, "est": False, "ouest": False}
-        config[porte_entree_direction] = True
-
-        # Deuxième porte choisie aléatoirement (à l'opposé de l'entrée)
-        if porte_entree_direction == "nord":
-            config["est"] = True
-        elif porte_entree_direction == "sud":
-            config["ouest"] = True
-        elif porte_entree_direction == "est":
-            config["sud"] = True
-        elif porte_entree_direction == "ouest":
-            config["nord"] = True
+    nom="Nook"
+    image_path="Images_Blue_Prince/Images/Rooms/Nook.png"
+    rarete=1
+    gemmes=0
+    couleur="bleue"
+    objets = ['des']
+    def __init__(self):
+        config = {"nord": False, "sud": True, "est": False, "ouest": True}
 
         super().__init__(
-            nom="Nook",
-            row=row,
-            col=col,
+            nom=self.nom,
             porte_config=config,
-            image_path="Images_Blue_Prince/Images/Rooms/Nook.png",
-            rarete=1,
-            gemmes=0,
-            couleur="bleue",
+            image_path=self.image_path,
+            rarete=self.rarete,
+            gemmes=self.gemmes,
+            couleur=self.couleur,
+            objets=self.objets,
             effet_special = "Contient 1 clé à la découverte"
         )
     
-    def on_discover(self, joueur, jeu, col, row, direction_entree):
-        super().on_discover(joueur, jeu, col, row, direction_entree)
+    def on_discover(self, joueur, manoir, col, row):
+        super().on_discover(joueur, manoir, col, row)
         joueur.inventaire.ajouter_cles(1)
 
 
@@ -71,75 +64,30 @@ class Garage(Piece):
     """Pièce Garage
     +3 clés
     Une seule porte (cul-de-sac)"""
-
-    def __init__(self, row: int, col,porte_entree_direction: str):
+    nom="Garage"
+    image_path="Images_Blue_Prince/Images/Rooms/Garage.png"
+    rarete=2
+    gemmes=1
+    couleur="bleue"
+    objets = ['crochetage_kit','detecteur_metal']
+    def __init__(self):
         # Une seule porte : celle par laquelle on entre
-        config = {"nord": False, "sud": False, "est": False, "ouest": False}
-        config[porte_entree_direction] = True
+        config = {"nord": False, "sud": True, "est": False, "ouest": False}
 
         super().__init__(
-            nom="Garage",
-            row=row,
-            col=col,
+            nom=self.nom,
             porte_config=config,
-            image_path="Images_Blue_Prince/Images/Rooms/Garage.png",
-            rarete=2,  
-            gemmes=1,  
-            couleur="bleue",
-            effet_special="Contient 3 clés à la découverte", 
-            default_orientation="sud"
+            image_path=self.image_path,
+            rarete=self.rarete,
+            gemmes=self.gemmes,
+            couleur=self.couleur,
+            objets=self.objets,
+            effet_special="Contient 3 clés à la découverte"
         )
 
-    def on_discover(self, joueur, jeu, col, row, direction_entree):
-        super().on_discover(joueur, jeu, col, row, direction_entree)
+    def on_discover(self, joueur, manoir, col, row):
+        super().on_discover(joueur, manoir, col, row)
         joueur.inventaire.ajouter_cles(3)
-
-# Pièce Music Room
-
-# Pièce Locker Room
-class LockerRoom(Piece):
-    """Pièce Locker Room
-    Plusieurs clés à la découverte répandues dans le manoir"""
-
-    def __init__(self, row: int, col,porte_entree_direction: str):
-        # Deux portes opposées
-        config = {"nord": True, "sud": True, "est": False, "ouest": False}
-        config[porte_entree_direction] = True
-
-        #Gérer les bordures 
-        if row == 0:
-            config["nord"] = False
-        if row == 8:
-            config["sud"] = False
-
-        # La porte opposée 
-        if porte_entree_direction == "nord":
-            config["sud"] = True
-        elif porte_entree_direction == "sud":
-            config["nord"] = True
-        elif porte_entree_direction == "est":
-            config["ouest"] = True
-        elif porte_entree_direction == "ouest":
-            config["est"] = True
-
-        super().__init__(
-            nom="Locker Room",
-            row=row,
-            col=col,
-            porte_config=config,
-            image_path="Images_Blue_Prince/Images/Rooms/Locker_Room.png",
-            rarete=3,     
-            gemmes=1,     
-            couleur="bleue",
-            effet_special="Ajoute plusieurs clés réparties dans le manoir"
-        )
-
-    def on_discover(self, joueur, jeu, col, row, direction_entree):
-        super().on_discover(joueur, jeu, col, row, direction_entree)
-
-        # Nombre de clés aléatoire entre 3 et 6 
-        nbre_cles = random.randint(3, 6)
-        joueur.inventaire.ajouter_cles(nbre_cles)
 
 
 # Pièce Den
@@ -147,41 +95,76 @@ class Den(Piece):
     """Pièce Den
     +1 gemme
     Trois portes en T"""
-
-    def __init__(self, row: int, col,porte_entree_direction: str):
+    nom="Den"
+    image_path="Images_Blue_Prince/Images/Rooms/Den.png"
+    rarete=1   
+    gemmes=0   
+    couleur="bleue"
+    objets=['des','patte_lapin']
+    def __init__(self):
         # Trois portes : disposition en T (entrée + deux latérales)
-        config = {"nord": False, "sud": False, "est": False, "ouest": False}
-        config[porte_entree_direction] = True
-
-        # Ajoute deux autres portes perpendiculaires à l’entrée
-        if porte_entree_direction in ["nord", "sud"]:
-            config["est"] = True
-            config["ouest"] = True
-        else:  # entrée par est ou ouest
-            config["nord"] = True
-            config["sud"] = True
+        config = {"nord": False, "sud": True, "est": True, "ouest": True}
 
         super().__init__(
-            nom="Den",
-            row=row,
-            col=col,
+            nom=self.nom,
             porte_config=config,
-            image_path="Images_Blue_Prince/Images/Rooms/Den.png",
-            rarete=1,        
-            gemmes=0,         
-            couleur="bleue",
+            image_path=self.image_path,
+            rarete=self.rarete,
+            gemmes=self.gemmes,
+            couleur=self.couleur,
             effet_special="Contient 1 gemme à la découverte"
         )
 
-    def on_discover(self, joueur, jeu, col, row, direction_entree):
-        super().on_discover(joueur, jeu, col, row, direction_entree)
+    def on_discover(self, joueur, manoir, col, row):
+        super().on_discover(joueur, manoir, col, row)
         joueur.inventaire.ajouter_gemmes(1)
 
 
-# Pièce Wine Cellar
-# Pièce Trophy Room
-# Pièce Ballroom
-# Pièce Pantry
-# Pièce Rumpus Room
-# Pièce Office
+# Rumpus Room
+class RampusRoom(Piece):
+    """"pièce Rumpus Room
+    """
+    rarete = 1
+    gemmes = 1
+    image_path = "Images_Blue_Prince/Images/Rooms/Rumpus_Room.png"
+    nom = "RumpusRoom"
+    couleur ="bleue"
+    objets = ['des', 'kit_crochetage', 'patte_lapin']  
+    def __init__(self):
+        config = {"nord": True, "sud": True, "est": False, "ouest": False}
+        super().__init__(
+            nom=self.nom,
+            porte_config=config,
+            image_path=self.image_path,
+            rarete=self.rarete,
+            gemmes=self.gemmes,
+            objets=self.objets,
+            couleur=self.couleur
+        )
+
+
+# Trophy Room
+class TrophyRoom(Piece):
+    """"pièce Trophy Room
+    """
+    rarete = 3
+    gemmes = 5
+    image_path = "Images_Blue_Prince/Images/Rooms/Trophy_Room.png"
+    nom = "TrophyRoom"
+    couleur ="bleue"
+    objets = ['des', 'kit_crochetage']  
+    def __init__(self):
+        config = {"nord": False, "sud": True, "est": False, "ouest": True}
+        super().__init__(
+            nom=self.nom,
+            porte_config=config,
+            image_path=self.image_path,
+            rarete=self.rarete,
+            gemmes=self.gemmes,
+            objets=self.objets,
+            couleur=self.couleur
+        )
+    def on_discover(self, joueur, manoir, col, row):
+        super().on_discover(joueur, manoir, col, row)
+        joueur.inventaire.ajouter_gemmes(8)
 

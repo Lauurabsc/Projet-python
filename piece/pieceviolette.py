@@ -1,5 +1,4 @@
 from piece.piece import Piece
-from porte import Porte
 
 
 # Pièce Bedrooms
@@ -7,83 +6,88 @@ class Bedrooms(Piece):
 
     """Pièce 'Bedrooms'
     Effet : +2 pas en entrant"""
-    
-    def __init__(self, row,col, porte_entree_direction=None):
-        config = {"nord": True, "sud": True, "est": True, "ouest": True}
+    rarete = 1
+    gemmes = 0
+    image_path="Images_Blue_Prince/Images/Bedrooms/Bedroom.png"
+    couleur="violette"
+    nom="Bedrooms"
+    objets=['gemmes','pommes','cles','des']
+    def __init__(self):
+        config = {"nord": False, "sud": True, "est": False, "ouest": True}
 
         super().__init__(
-            nom="Bedrooms",
-            row=row,
-            col=col,
+            nom=self.nom,
             porte_config=config,
-            porte_entree_direction=porte_entree_direction,
-            image_path="Images_Blue_Prince/Images/Bedrooms/Bedroom.png",
-            rarete=1,
-            couleur="violette"
+            image_path=self.image_path,
+            rarete=self.rarete,
+            gemmes=self.gemmes,
+            couleur=self.couleur,
+            objets=self.objets
         )
 
-    def on_enter(self, joueur, jeu):
+    def on_enter(self, joueur):
         """ Redéfinition de l'effet : +2 pas. """
-        super().on_enter(joueur, jeu)
+        super().on_enter(joueur)
         joueur.inventaire.ajouter_pas(2)
 
-
-# Pièce GuestBedroom
+# Guest Bedroom
 class GuestBedroom(Piece):
-
-    """Pièce 'Guest Bedroom'
-    Effet : +10 pas si elle est selectionnée
-    Sans issue"""
-
-    def __init__(self, row,col, porte_entree_direction):
-        config = {"nord": False, "sud": False, "est": False, "ouest": False}
-        config[porte_entree_direction] = True
+    """"pièce Guest Bedroom
+    """
+    rarete = 1
+    gemmes = 0
+    image_path = "Images_Blue_Prince/Images/Bedrooms/Guest_Bedroom.png"
+    nom = "GestBedroom"
+    couleur ="violette"
+    objets = ['cles', 'gemmes']
+    def __init__(self):
+        config = {"nord": False, "sud": True, "est": False, "ouest": False}
         super().__init__(
-            nom="Guest Bedroom",
-            row=row,
-            col=col,
+            nom=self.nom,
             porte_config=config,
-            image_path="Images_Blue_Prince/Images/Bedrooms/Guest_Bedroom.png",
-            rarete=1,
-            couleur="violette"
+            image_path=self.image_path,
+            rarete=self.rarete,
+            gemmes=self.gemmes,
+            objets=self.objets,
+            couleur=self.couleur
         )
 
-
-    def on_draft(self, joueur, jeu):
+    def on_discover(self, joueur, manoir, col, row):
         """ Redéfinition de l'effet : +10 pas au choix. """
+        super().on_discover(joueur, manoir, col, row)
         joueur.inventaire.ajouter_pas(10)
 
 
-# Pièce ServantsQuarters      
+# Servant's Quarters
 class ServantsQuarters(Piece):
-    
-    """Pièce 'Servants's Quarters'
-    Effet : Donne des clés en fonction du nombre de chambres déjà posées"""
-
-    def __init__(self, row: int,col, porte_entree_direction: str):
-        config = {"nord": True, "sud": True, "est": True, "ouest": True}
-        config[porte_entree_direction] = True
-
+    """"pièce Servant's Quarters
+    """
+    rarete = 2
+    gemmes = 1
+    image_path = "Images_Blue_Prince/Images/Bedrooms/Servants_Quarters.png"
+    nom = "ServantsQuarters"
+    couleur ="violette"
+    objets = ['des', 'gemmes', 'detecteur_metal']
+    def __init__(self):
+        config = {"nord": False, "sud": True, "est": False, "ouest": False}
         super().__init__(
-            nom="Servant's Quarters",
-            row=row,
-            col=col,
+            nom=self.nom,
             porte_config=config,
-            image_path="Images_Blue_Prince/Images/Bedrooms/Servants_Quarters.png",
-            rarete=2,
-            objets=["2_des", "1_gemme", "detecteur_metaux", "pelle"],
-            couleur="violette"
+            image_path=self.image_path,
+            rarete=self.rarete,
+            gemmes=self.gemmes,
+            objets=self.objets,
+            couleur=self.couleur
         )
-   
-    def on_discover(self, joueur, jeu, col, row, direction_entree):
+    def on_discover(self, joueur, manoir, col, row):
         """
         Effet activé à la POSE de la pièce.
         On compte combien de pièces violettes sont déjà sur la grille.
         """
-        super().on_discover(joueur, jeu, col, row, direction_entree)
+        super().on_discover(joueur, manoir, col, row)
         count_chambres = 0
        
-        for r in jeu.manoir.grille:
+        for r in manoir.grille:
             for piece in r:
                 if piece and piece.couleur == "violette":
                     count_chambres += 1
@@ -91,41 +95,43 @@ class ServantsQuarters(Piece):
         cles_a_donner = max(0, count_chambres - 1)
         cles_a_donner = min(cles_a_donner, 10)
        
-        if cles_a_donner > 0:
-            joueur.inventaire.ajouter_cles(cles_a_donner)
+        joueur.inventaire.ajouter_cles(cles_a_donner)
 
 
-# Pièce MasterBedroom
+# Master Bedroom
 class MasterBedroom(Piece):
-
-    """Pièce 'Master Bedroom
-    Rare, se trouve dans les niveaux supérieurs"""
-
-    def __init__(self, row: int,col, porte_entree_direction: str):
-        config = {"nord": True, "sud": True, "est": True, "ouest": True}
-        config[porte_entree_direction] = True
-
+    """"pièce Master Bedroom
+    """
+    rarete = 3
+    gemmes = 2
+    image_path = "Images_Blue_Prince/Images/Bedrooms/Master_Bedroom.png"
+    nom = "MasterBedroom"
+    couleur ="violette"
+    objets = ['des', 'cles', 'gemmes', 'kit_crochetage']
+    def __init__(self):
+        config = {"nord": False, "sud": True, "est": False, "ouest": False}
         super().__init__(
-            nom="Master Bedroom",
-            row=row,
-            col=col,
+            nom=self.nom,
             porte_config=config,
-            rarete=3,
-            condition_placement="niveaux_superieurs",
-            image_path="Images_Blue_Prince/Images/Bedrooms/Master_Bedroom.png",
-            objets=["2_des", "4_or", "1_cle", "3_gemmes", "lockpick"],
-            couleur="violette"
+            image_path=self.image_path,
+            rarete=self.rarete,
+            gemmes=self.gemmes,
+            objets=self.objets,
+            couleur=self.couleur
         )
-
-
-# Pièce Boudoir
-
-
-# Pièce Nursery
-
-
-# Pièce BunkRoom
-
-
-# Pièce HerLadyshipsChamber
-
+    def on_discover(self, joueur, manoir, col, row):
+        """
+        Effet activé à la POSE de la pièce.
+        On compte combien de pièces sont déjà sur la grille.
+        """
+        super().on_discover(joueur, manoir, col, row)
+        count_room = 0
+       
+        for r in manoir.grille:
+            for piece in r:
+                if piece:
+                    count_room += 1
+       
+        pas_a_donner = max(0, count_room - 1)
+       
+        joueur.inventaire.ajouter_pas(pas_a_donner)
