@@ -1,9 +1,10 @@
 # Importation des bibliothèques
 import pygame
-from manoir import Manoir
-from piece.piece_special import EntranceHall, Antechamber
+
 from Inventaire import Inventaire
 from joueur import Joueur
+from manoir import Manoir
+from piece.piece_special import Antechamber, EntranceHall
 from tirage import Pioche
 
 
@@ -17,7 +18,6 @@ class Jeu:
     - la boucle principale du jeu (gestion des événements et rafraîchissement de l'écran).
     - l'affichage du manoir
     """
-
 
     def __init__(self):
         """
@@ -47,18 +47,9 @@ class Jeu:
 
         # Création du manoir
         self.manoir = Manoir()
-
-        #Création de la Surface du Manoir 
-        #Création d'une surface dédiée au manoir
-        self.taille_case_manoir = self.manoir.taille_case
-        self.largeur_manoir_px = self.manoir.colonnes * self.taille_case_manoir
-        self.hauteur_manoir_px = self.manoir.lignes * self.taille_case_manoir
-        
-        #surface de la grille et les pièces
-        self.surface_manoir = pygame.Surface((self.largeur_manoir_px, self.hauteur_manoir_px))
-        
+    
         # Le rectangle qui définit où dessiner cette surface sur la fenêtre principale
-        self.rect_manoir = self.surface_manoir.get_rect(topleft=(50, 50))
+        self.rect_manoir = self.manoir.surface.get_rect(topleft=(50, 50))
 
         # Pièce d'entrée
         self.entree = EntranceHall(row=8, col=2)
@@ -78,8 +69,6 @@ class Jeu:
             250                          
         )
 
-        self.inventaire = Inventaire()
-
         # Zones des pièces
 
         self.rect_choix_piece = pygame.Rect(
@@ -91,9 +80,8 @@ class Jeu:
 
         # Création du joueur à la position de départ (EntranceHall)
         self.joueur = Joueur(ligne_depart=8, colonne_depart=2)
-        self.inventaire = self.joueur.inventaire
 
-        # Jeu a 2 éats : "EXPLORATION" ou "TIRAGE_PIECE"
+        # Jeu a 2 états : "EXPLORATION" ou "TIRAGE_PIECE"
         self.etat_jeu = "EXPLORATION"
 
         # Création de la pioche
@@ -111,8 +99,8 @@ class Jeu:
         # Map pour traduire la direction de l'action en direction d'entrée 
         self.map_direction_opposee = {"nord": "sud", "sud": "nord", "ouest": "est", "est": "ouest"}
         
-        # Curseur d'action par les flèches 
-        self.porte_selectionnee = "nord"
+        # Curseur d'action par le déplacement
+        self.porte_selectionnee = None
 
         # Map pour traduire ZQSD en direction
         self.map_mouvement_direction = {
@@ -120,14 +108,6 @@ class Jeu:
             pygame.K_s: "sud",
             pygame.K_q: "ouest",
             pygame.K_d: "est"
-        }
-
-        # Map pour traduire les Flèches en direction
-        self.map_action_direction = {
-            pygame.K_UP: "nord",
-            pygame.K_DOWN: "sud",
-            pygame.K_LEFT: "ouest",
-            pygame.K_RIGHT: "est"
         }
 
         # Contrôle de la boucle de jeu
@@ -140,9 +120,20 @@ class Jeu:
         Demande 3 pièces à la Pioche et les instancie.
         """
         ligne_cible, col_cible = coords_cible
-
+        self.direction_entree = self.map_direction_opposee[direction_action]
+        # contrainte sur les pieces eligibles
+        contrainte_dict ={}
+        if ligne_cible == self.manoir.lignes:
+            contrainte_dict['nord'] = False
+        if ligne_cible == 0:
+            contrainte_dict['sud'] = False
+        if col_cible == self.manoir.largeur:
+            contrainte_dict['est'] = False
+        if col_cible == 0:
+            contrainte_dict['ouest'] = False
+        contrainte_dict[self.direction_entree] = False
         # Demande 3 classes de pièce à la Pioche
-        classes_tirees = self.pioche.tirer_trois_pieces(ligne_cible)
+        classes_tirees = self.pioche.tirer_trois_pieces(contrainte_dict)
         
         if not classes_tirees:
             print("Tirage annulé (pioche vide ?)")
@@ -150,7 +141,6 @@ class Jeu:
 
         #Stocker les infos
         self.coordonnees_tirage = coords_cible
-        self.direction_entree = self.map_direction_opposee[direction_action]
         self.pieces_proposees = []
         
         #  Instancier les 3 pièces
@@ -167,24 +157,27 @@ class Jeu:
         Finalise le choix du joueur, place la pièce, déplace le joueur
         et remet le jeu en mode EXPLORATION.
         """
-        #Vérifie si l'index est valide
+        # Vérifie si l'index est valide
         if not (0 <= index_choix < len(self.pieces_proposees)):
             print(f"Erreur : Choix d'index invalide ({index_choix})")
             return
 
-        #Récupère la pièce choisie
+        # Récupère la pièce choisie
         piece_choisie = self.pieces_proposees[index_choix]
         
-        # A ajouter : Gérer le coût en gemmes
-            
+        # Payer le coût en gemmes
+        self.joueur.inventaire.depense_gemmes(piece_choisie.gemmes)
         # Retirer la classe de la pièce de la pioche
         self.pioche.retirer_piece(type(piece_choisie))
         
-        # Ajouter la pièce au manoir
+        # Générer les portes de la pièce 
         ligne, col = self.coordonnees_tirage
+        piece_choisie.generate_portes(ligne, self.direction_entree)
+        
+        # Ajouter la pièce au manoir
         self.manoir.ajouter_piece(piece_choisie, ligne, col)
         
-        #  Appeler 'on_discover' pour les effets de pose 
+        # Appeler 'on_discover' pour les effets de pose 
         piece_choisie.on_discover(self.joueur, self, col, ligne, self.direction_entree)
         
         # Appeler 'on_draft' pour les effets de choix 
@@ -193,7 +186,7 @@ class Jeu:
         # Déplacer le joueur dans la nouvelle pièce
         self.joueur.deplacer_vers(ligne, col)
         
-        #Appeler 'on_enter'
+        # Appeler 'on_enter'
         piece_choisie.on_enter(self.joueur, self)
         
         #Revenir à l'exploration
@@ -270,16 +263,15 @@ class Jeu:
                 num_texte = self.font_titre.render(str(i+1), True, (255, 255, 0))
                 self.fenetre.blit(num_texte, (card_x + (card_width // 2) - 5, card_y + card_height - 35))
     
-
     def dessiner_curseur_action(self, surface): 
         """
         Dessine le "trait épais" sur la porte sélectionnée (curseur d'action).
         """
 
         # Position en pixels du coin de la case du joueur
-        x = self.joueur.colonne * self.taille_case_manoir
-        y = self.joueur.ligne * self.taille_case_manoir
-        taille = self.taille_case_manoir
+        taille = self.manoir.taille_case
+        x = self.joueur.colonne * taille
+        y = self.joueur.ligne * taille
         epaisseur = 5 # "Trait épais"
         couleur = (255, 255, 255) # Blanc
 
@@ -294,8 +286,6 @@ class Jeu:
             pygame.draw.line(surface, couleur, (x + marge, y + marge), (x + marge, y + taille - marge), epaisseur)
         elif self.porte_selectionnee == "est":
             pygame.draw.line(surface, couleur, (x + taille - marge, y + marge), (x + taille - marge, y + taille - marge), epaisseur)
-
-        
 
     def boucle_principale(self):
         """
@@ -321,28 +311,11 @@ class Jeu:
                 
                     if self.etat_jeu == "EXPLORATION":
 
-                        # Mouvement du joueur (ZQSD)
+                        # Selection d'une direction par le joueur (ZQSD)
                         if evenement.key in self.map_mouvement_direction:
-                            direction_mouvement = self.map_mouvement_direction[evenement.key]
+                            self.porte_selectionnee = self.map_mouvement_direction[evenement.key]
                         
-                            #Tenter un louvement immédiat
-                            statut, coords = self.joueur.tenter_action(direction_mouvement, self.manoir)
-                        
-                            if statut == "MOUVEMENT_REUSSI":
-                                # On ne bouge que si la pièce existe déjà
-                                self.joueur.deplacer_vers(coords[0], coords[1])
-                                piece = self.manoir.grille[coords[0]][coords[1]]
-                                if piece:
-                                    piece.on_enter(self.joueur, self)
-                            else:
-                                # Si c'est DECOUVERTE ou ECHOUE, ZQSD ne fait rien.
-                                print(f"Déplacement ZQSD bloqué vers {direction_mouvement}.")
-
-                        #Selection de portee (flèches)
-                        elif evenement.key in self.map_action_direction:
-                            self.porte_selectionnee = self.map_action_direction[evenement.key]
-
-                        #Valider une action avec la touche "espace"
+                        # Valider de la direction avec la touche "espace"
                         elif evenement.key == pygame.K_SPACE:
                             statut, coords = self.joueur.tenter_action(self.porte_selectionnee, self.manoir)
                         
@@ -377,29 +350,26 @@ class Jeu:
             self.fenetre.fill(self.COULEUR_FOND)
             
             # Dessin du manoir
-            self.surface_manoir.fill(self.COULEUR_FOND)
+            self.manoir.surface.fill(self.COULEUR_FOND)
 
             # Dessin de la grille sur la surface du manoir
-            self.manoir.dessiner(self.surface_manoir)
-
-            # Dessin des cases composant la grille
-            self.manoir.dessiner(self.surface_manoir)
+            self.manoir.dessiner()
 
             # Dessin des pièces
             for ligne in self.manoir.grille:
                 for piece in ligne:
                     if piece:
-                        piece.draw(self.surface_manoir)
+                        piece.draw(self.manoir.surface)
 
             # Dessin du curseur du joueur sur le manoir
-            self.joueur.dessiner_curseur(self.surface_manoir, self.manoir.taille_case, (255, 255, 255))
+            self.joueur.dessiner_curseur(self.manoir.surface, self.manoir.taille_case, (255, 255, 255))
             
             # On ne dessine le curseur d'action que si on explore
             if self.etat_jeu == "EXPLORATION":
-                self.dessiner_curseur_action(self.surface_manoir)
+                self.dessiner_curseur_action(self.manoir.surface)
 
             # Surface du Manoir sur la fenêtre principale
-            self.fenetre.blit(self.surface_manoir, self.rect_manoir)
+            self.fenetre.blit(self.manoir.surface, self.rect_manoir)
 
             self.dessiner_interface_droite()
 
@@ -428,14 +398,11 @@ class Jeu:
 
             # A COMPLETER
 
-
             # Rafraîchit l'écran
             pygame.display.flip()
 
-
             # Vitesse d’actualisation (30 images par seconde)
             self.clock.tick(30)
-
 
         # Quitte Pygame à la fin du jeu
         pygame.quit()
