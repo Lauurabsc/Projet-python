@@ -9,17 +9,17 @@ class Inventaire:
     Classe Inventaire
     Gère les objets du joueur :
     - Objets consommables : pas, pièces d'or, gemmes, clés, dés
-    - Objets permanents : pelle, marteau, kit de crochetage, pied de lapin
+    - Objets permanents : détecteur de métal, kit de crochetage, patte de lapin
     """
 
     def __init__(self):
         # Objets consommables
             # Initialisation
-        self.pas = 70      # nombre de pas disponibles
-        self.piece_or = 0      # pièces d'or
-        self.gemmes = 2    # gemmes
-        self.cles = 0      # clés
-        self.des = 0       # dés
+        self.pas = 70     # nombre de pas disponibles
+        self.piece_or = 0 # pièces d'or
+        self.gemmes = 2   # gemmes
+        self.cles = 0     # clés
+        self.des = 0      # dés
 
         # Objets permanents
         self.objets_permanents = []
@@ -36,9 +36,9 @@ class Inventaire:
             "Clé": self.charger_image("Key.png", dossier_consommable),
             "Dé": self.charger_image("Dice.png", dossier_consommable),
 
-            "Lockpick": self.charger_image("Lockpick.png", dossier_permanent),
-            "Metal_Detector": self.charger_image("Metal_Detector.png", dossier_permanent),
-            "Rabbit_Foot": self.charger_image("Rabbit_Foot.png", dossier_permanent)
+            "Kit_crochetage": self.charger_image("Lockpick.png", dossier_permanent),
+            "Detecteur_Metal": self.charger_image("Metal_Detector.png", dossier_permanent),
+            "Patte_Lapin": self.charger_image("Rabbit_Foot.png", dossier_permanent)
         }
 
     # Chargement d’image
@@ -77,7 +77,7 @@ class Inventaire:
 
     def depense_piece_or(self, n=1):
         """Dépense n pièces d'or si c'est possible"""
-        if n <= 0:
+        if n < 0:
             return False
         if self.piece_or >= n:
             self.piece_or -= n
@@ -86,7 +86,7 @@ class Inventaire:
 
     def depense_gemmes(self, n=1):
         """Dépense n gemmes si c'est possible"""
-        if n <= 0:
+        if n < 0:
             return False
         if self.gemmes >= n:
             self.gemmes -= n
@@ -95,7 +95,7 @@ class Inventaire:
 
     def depense_cle(self, n=1):
         """Dépense n clé si c'est possible"""
-        if n <= 0:
+        if n < 0:
             return False
         if self.cles >= n:
             self.cles -= n
@@ -104,7 +104,7 @@ class Inventaire:
 
     def depense_de(self, n=1):
         """Dépense n dés si c'est possible"""
-        if n <= 0:
+        if n < 0:
             return False
         if self.des >= n:
             self.des -= n
