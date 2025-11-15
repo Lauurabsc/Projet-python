@@ -5,7 +5,7 @@ class EntranceHall(Piece):
 
     """Pièce de départ"""
 
-    def __init__(self, col, row = 0):
+    def __init__(self):
 
         config = {
             "nord": True,
@@ -16,10 +16,7 @@ class EntranceHall(Piece):
 
         super().__init__(
             nom="Entrance Hall",
-            row=row,
-            col=col,
             porte_config=config,
-
             image_path="Images_Blue_Prince/Images/Rooms/Entrance_Hall.png",
             gemmes=0,
             rarete=0, 
@@ -28,16 +25,13 @@ class EntranceHall(Piece):
             couleur = None
         )
 
-        for direction in self.portes:
-            self.portes[direction] = Porte(row, force_unlocked=True)
-
 class Antechamber(Piece): 
     """Pièce 'Anterchamber"
 
     Pièce fixe au Rang 9. Toutes les portes sont scellées.
     """
 
-    def __init__(self,col,  row = 8): 
+    def __init__(self): 
 
         config = {
             "nord": True,
@@ -48,26 +42,20 @@ class Antechamber(Piece):
 
         super().__init__(
             nom="Antechamber",
-            row=row, 
-            col=col,
             porte_config=config,
             gemmes=0,       
             rarete=0,      
             image_path="Images_Blue_Prince/Images/Rooms/Antechamber.png",
             objets=None,
-            effet_special="Portes scellées. Doit être déverrouillée.",
+            effet_special=None,
             condition_placement="Fixe au rang 9", 
             couleur=None
         )
 
-        for porte in self.portes.values():
-            if porte is not None:
-                porte.niveau_verouillage = "scellee"
-
-    def on_enter(self, joueur, jeu): 
+    def on_enter(self, joueur): 
         """Méthode si le joueur réussit à entrer"""
 
-        super().on_enter(joueur, jeu)
+        super().on_enter(joueur)
         print(f"Le joueur est entré dans l'{self.nom} ! Objectif atteint.")
 
         
