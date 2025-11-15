@@ -1,6 +1,8 @@
 # Importation des bibliothèques
-import pygame
 import os
+
+import pygame
+
 
 class Inventaire:
     """
@@ -23,22 +25,20 @@ class Inventaire:
         self.objets_permanents = []
 
         # Dossiers d’images
-        self.dossier_consommable = "Images_inventaire/Objets_consommables"
-        self.dossier_permanent = "Images_inventaire/Objets_permanents"
+        dossier_consommable = "Images_inventaire/Objets_consommables"
+        dossier_permanent = "Images_inventaire/Objets_permanents"
 
         # Chargement des images 
         self.images = {
-            "Pas": self.charger_image("Steps.png", self.dossier_consommable),
-            "Or": self.charger_image("Gold.png", self.dossier_consommable),
-            "Gemme": self.charger_image("Gem.png", self.dossier_consommable),
-            "Clé": self.charger_image("Key.png", self.dossier_consommable),
-            "Dé": self.charger_image("Dice.png", self.dossier_consommable),
+            "Pas": self.charger_image("Steps.png", dossier_consommable),
+            "Or": self.charger_image("Gold.png", dossier_consommable),
+            "Gemme": self.charger_image("Gem.png", dossier_consommable),
+            "Clé": self.charger_image("Key.png", dossier_consommable),
+            "Dé": self.charger_image("Dice.png", dossier_consommable),
 
-            "Hammer": self.charger_image("Hammer.png", self.dossier_permanent),
-            "Shovel": self.charger_image("Shovel.png", self.dossier_permanent),
-            "Lockpick": self.charger_image("Lockpick.png", self.dossier_permanent),
-            "Metal_Detector": self.charger_image("Metal_Detector.png", self.dossier_permanent),
-            "Rabbit_Foot": self.charger_image("Rabbit_Foot.png", self.dossier_permanent)
+            "Lockpick": self.charger_image("Lockpick.png", dossier_permanent),
+            "Metal_Detector": self.charger_image("Metal_Detector.png", dossier_permanent),
+            "Rabbit_Foot": self.charger_image("Rabbit_Foot.png", dossier_permanent)
         }
 
     # Chargement d’image
@@ -123,12 +123,8 @@ class Inventaire:
         font = pygame.font.SysFont(None, 24)
 
         # Intérieur du cadre inventaire
-        marge_x = rect_inventaire.x + 20
-        marge_y = rect_inventaire.y + 50
-
-        # Ligne des objets consommables
-        x = marge_x
-        y = marge_y
+        x = rect_inventaire.x + 20
+        y = rect_inventaire.y + 50
 
         ressources = [
         ("Pas", self.pas),
@@ -147,8 +143,7 @@ class Inventaire:
                 x += 100  # espace horizontal entre les icônes
 
         # Ligne des objets permanents 
-        x = marge_x
-        y = marge_y + 60  # une ligne plus bas
+        y = y + 60  # une ligne plus bas
         for nom in self.objets_permanents:
             image = self.images.get(nom)
             if image:
