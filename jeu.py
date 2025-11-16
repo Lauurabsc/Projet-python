@@ -278,7 +278,7 @@ class Jeu:
             
 
             texte_relance = self.font_titre.render("Vous pouvez refaire un tirage en appuyant sur 'b' (consomme un dé)", True, (255, 255,0))
-            self.fenetre.blit(texte_relance, (self.rect_choix_piece.x + 10, self.rect_choix_piece.bottom - 30))
+            self.fenetre.blit(texte_relance, (self.rect_choix_piece.x + 10, self.rect_choix_piece.bottom - 45))
             
             # Affichage des 3 pièces
             card_width = 180
