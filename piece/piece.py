@@ -155,7 +155,7 @@ class Piece :
     
             if nom_objet in map_objet_action:
                 
-                chance_de_base = 0.5 # 30% de base
+                chance_de_base = 0.4 # 40% de base
                 
 
                 if a_la_patte:
