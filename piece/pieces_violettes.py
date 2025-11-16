@@ -39,7 +39,7 @@ class GuestBedroom(Piece):
     image_path = "Images_Blue_Prince/Images/Bedrooms/Guest_Bedroom.png"
     nom = "GestBedroom"
     couleur ="violette"
-    objets = ['Clé', 'Gemme','LockPick']
+    objets = ['Clé', 'Gemme','Lockpick']
     def __init__(self):
         config = {"nord": False, "sud": True, "est": False, "ouest": False}
         super().__init__(
@@ -67,7 +67,7 @@ class ServantsQuarters(Piece):
     image_path = "Images_Blue_Prince/Images/Bedrooms/Servants_Quarters.png"
     nom = "ServantsQuarters"
     couleur ="violette"
-    objets = ['Dé', 'Gemme', 'Detecteur_Metal','LockPick']
+    objets = ['Dé', 'Gemme', 'Detecteur_Metal','Lockpick']
     def __init__(self):
         config = {"nord": False, "sud": True, "est": False, "ouest": False}
         super().__init__(
@@ -107,7 +107,7 @@ class MasterBedroom(Piece):
     image_path = "Images_Blue_Prince/Images/Bedrooms/Master_Bedroom.png"
     nom = "MasterBedroom"
     couleur ="violette"
-    objets = ['Dé', 'Clé', 'Gemme', 'LockPick']
+    objets = ['Dé', 'Clé', 'Gemme', 'Lockpick']
     def __init__(self):
         config = {"nord": False, "sud": True, "est": False, "ouest": False}
         super().__init__(

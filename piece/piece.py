@@ -133,6 +133,8 @@ class Piece :
         """
         print(f"Le joueur entre dans : {self.nom}")
 
+        messages_obtenus = []
+
         a_la_patte = "Patte_Lapin" in joueur.inventaire.objets_permanents
         a_le_detecteur = "Detecteur_Metal" in joueur.inventaire.objets_permanents
 
@@ -144,7 +146,7 @@ class Piece :
             "Or": lambda: joueur.inventaire.ajouter_piece_or(1), 
             
             # Objets permanents 
-            "Kit_crochetage": lambda: joueur.inventaire.ajouter_objet_permanent("Kit_crochetage"),
+            "Lockpick": lambda: joueur.inventaire.ajouter_objet_permanent("Lockpick"),
             "Detecteur_Metal": lambda: joueur.inventaire.ajouter_objet_permanent("Detecteur_Metal"),
             "Patte_Lapin": lambda: joueur.inventaire.ajouter_objet_permanent("Patte_Lapin"),
         }
@@ -160,25 +162,37 @@ class Piece :
                     chance_de_base += 0.40 # Bonus de 20% 
                     
 
-                if a_le_detecteur and nom_objet in ["cles", "piece_or"]:
+                if a_le_detecteur and nom_objet in ["Clé", "Or"]:
                     chance_de_base += 0.40 # Bonus de 25% 
 
                 if random.random() < chance_de_base:
-                    if nom_objet in ["kit_crochetage", "detecteur_metal", "patte_lapin"]:
+                    if nom_objet in ["Lockpick", "Detecteur_Metal", "Patte_Lapin"]:
                         if nom_objet not in joueur.inventaire.objets_permanents:
                             action = map_objet_action[nom_objet]
                             action()
+                            messages_obtenus.append(f"{nom_objet} trouvé !")
                     
                     else:
                         action = map_objet_action[nom_objet]
                         action()
 
-        pass
+                        if nom_objet == "Pomme":
+                            messages_obtenus.append("Pomme trouvée ! (+2 Pas)")
+                        elif nom_objet == "Gemme":
+                            messages_obtenus.append("Gemme trouvée ! (+1)")
+                        elif nom_objet == "Clé":
+                            messages_obtenus.append("Clé trouvée ! (+1)")
+                        elif nom_objet == "Dé":
+                            messages_obtenus.append("Dé trouvé ! (+1)")
+                        elif nom_objet == "Or":
+                            messages_obtenus.append("Or trouvé ! (+1)")
+
+        return messages_obtenus
 
     def on_draft(self, joueur, jeu):
         """Méthode appelée quand le joueur choisit cette pièce"""
         pass
-
+    
 
     def on_discover(self, joueur, manoir, col, row):
         """Méthode appelée quand la pièce est placée sur la grille"""

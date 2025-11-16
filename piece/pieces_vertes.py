@@ -10,7 +10,7 @@ class Courtyard(Piece):
     image_path = "Images_Blue_Prince/Images/Green Rooms/Courtyard.png"
     nom = "Courtyard"
     couleur ="verte"
-    objets = ['Detecteur_Metak', 'Lockpick'] 
+    objets = ['Detecteur_Metal', 'Lockpick'] 
     def __init__(self):
         config = {"nord": False, "sud": True, "est": True, "ouest": True}
         super().__init__(

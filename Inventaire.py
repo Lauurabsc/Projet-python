@@ -37,7 +37,7 @@ class Inventaire:
             "Dé": self.charger_image("Dice.png", dossier_consommable),
 
             "Pomme": self.charger_image("pomme.png", dossier_consommable),
-            "Kit_crochetage": self.charger_image("Lockpick.png", dossier_permanent),
+            "Lockpick": self.charger_image("Lockpick.png", dossier_permanent),
             "Detecteur_Metal": self.charger_image("Metal_Detector.png", dossier_permanent),
             "Patte_Lapin": self.charger_image("Rabbit_Foot.png", dossier_permanent)
         }
@@ -48,7 +48,7 @@ class Inventaire:
         chemin = os.path.join(dossier, nom)
         if os.path.exists(chemin):
             image = pygame.image.load(chemin)
-            return pygame.transform.scale(image, (40, 40))
+            return pygame.transform.scale(image, (50, 50))
 
     # Ajout de ressources
     def ajouter_pas(self, n=1):
@@ -140,13 +140,14 @@ class Inventaire:
             if image:
                 fenetre.blit(image, (x, y))
                 texte = font.render(str(valeur), True, (255, 255, 255))
-                fenetre.blit(texte, (x + 45, y + 10))
+                fenetre.blit(texte, (x + 60, y + 15))
                 x += 100  # espace horizontal entre les icônes
 
         # Ligne des objets permanents 
         y = y + 60  # une ligne plus bas
+        x = rect_inventaire.x + 20
         for nom in self.objets_permanents:
             image = self.images.get(nom)
             if image:
                 fenetre.blit(image, (x, y))
-                x += 50
+                x += 70

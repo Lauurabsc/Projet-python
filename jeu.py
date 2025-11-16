@@ -88,6 +88,9 @@ class Jeu:
         # Gestion de message d'erreur (pas assez de dé)
         self.statut = None
 
+        self.statut_timer = 0   
+        self.statut_duree = 2500
+
         # Création de la pioche
         self.pioche = Pioche()
 
@@ -188,7 +191,10 @@ class Jeu:
         self.joueur.deplacer_vers(ligne, col)
         
         # Appeler 'on_enter'
-        piece_choisie.on_enter(self.joueur)
+        messages = piece_choisie.on_enter(self.joueur) 
+        if messages:
+            self.statut = ", ".join(messages) 
+            self.statut_timer = pygame.time.get_ticks()
         
         #Revenir à l'exploration
         self.etat_jeu = "EXPLORATION"
@@ -224,15 +230,46 @@ class Jeu:
             txt_space = self.font_normal.render("ESPACE : Ouvrir / Traverser", True, self.COULEUR_CADRE)
             self.fenetre.blit(txt_space, (self.rect_choix_piece.x + 10, self.rect_choix_piece.y + 75))
 
+            if self.statut:
+                temps_ecoule = pygame.time.get_ticks() - self.statut_timer
+                if temps_ecoule < self.statut_duree:
+                    couleur_statut = (255, 100, 100)
+                    if "trouvé" in self.statut: 
+                        couleur_statut = (100, 255, 100)
+
+                    txt_statut = self.font_normal.render(self.statut, True, couleur_statut)
+                    self.fenetre.blit(txt_statut, (self.rect_choix_piece.x + 10, self.rect_choix_piece.y + 105))
+                else:
+                    self.statut = None
+
             # Afficher la porte visée
             txt_visee = self.font_normal.render(f"Porte visée : {self.porte_selectionnee.upper()}", True, (255, 255, 0))
             self.fenetre.blit(txt_visee, (self.rect_choix_piece.x + 10, self.rect_choix_piece.y + 140))
             
             # Afficher Foyer si découvert 
-            if 'deverouillage_foyer' in self.joueur.effets_actifs.keys():
-                txt_foyer = self.font_normal.render(f"Foyer trouvé : Toutes les pièces oranges ont leurs portes déverrouillées", True, (0, 255, 0))
-                self.fenetre.blit(txt_foyer, (self.rect_choix_piece.x + 10, self.rect_choix_piece.y + 170))
+            y_offset_effets = 170 # Position Y de départ pour les messages
+            x_effets = self.rect_choix_piece.x + 10
+            couleur_effet = (0, 255, 0) # Vert
 
+            if 'deverouillage_foyer' in self.joueur.effets_actifs.keys():
+                txt_foyer = self.font_normal.render(f"Foyer trouvé : Portes oranges déverrouillées", True, couleur_effet)
+                self.fenetre.blit(txt_foyer, (x_effets, self.rect_choix_piece.y + y_offset_effets))
+                y_offset_effets += 25 # On décale vers le bas pour le prochain message
+
+            if 'Lockpick' in self.joueur.inventaire.objets_permanents:
+                txt_lockpick = self.font_normal.render(f"Kit trouvé : Portes (Niv 1) déverrouillées", True, couleur_effet)
+                self.fenetre.blit(txt_lockpick, (x_effets, self.rect_choix_piece.y + y_offset_effets))
+                y_offset_effets += 25
+            
+            if 'Detecteur_Metal' in self.joueur.inventaire.objets_permanents:
+                txt_detecteur = self.font_normal.render(f"Détecteur trouvé : + Chances Clés/Or", True, couleur_effet)
+                self.fenetre.blit(txt_detecteur, (x_effets, self.rect_choix_piece.y + y_offset_effets))
+                y_offset_effets += 25
+            
+            if 'Patte_Lapin' in self.joueur.inventaire.objets_permanents:
+                txt_patte = self.font_normal.render(f"Patte trouvée : + Chances Objets", True, couleur_effet)
+                self.fenetre.blit(txt_patte, (x_effets, self.rect_choix_piece.y + y_offset_effets))
+                y_offset_effets += 25
 
         elif self.etat_jeu == "TIRAGE_PIECE":
             # Afficher les 3 pièces proposées
@@ -275,10 +312,16 @@ class Jeu:
                 self.fenetre.blit(num_texte, (card_x + (card_width // 2) - 5, card_y + card_height - 30)) 
 
             if self.statut == 'DE_INSUFFISANT':
-                texte_erreur = self.font_titre.render("Vous n'avez pas assez de dé", True, (255, 0, 0))
-                rect_erreur = texte_erreur.get_rect(center=self.rect_choix_piece.center)
-                self.fenetre.blit(texte_erreur, rect_erreur)
-                self.statut = None
+                temps_ecoule = pygame.time.get_ticks() - self.statut_timer
+                
+                if temps_ecoule < self.statut_duree:
+                    couleur_statut = (255, 100, 100)
+                    
+                    texte_erreur = self.font_titre.render("Vous n'avez pas assez de dé", True, couleur_statut)
+                    rect_erreur = texte_erreur.get_rect(center=self.rect_choix_piece.center)
+                    self.fenetre.blit(texte_erreur, rect_erreur)
+                else:
+                    self.statut = None
     
     def dessiner_curseur_action(self, surface): 
         """
@@ -336,12 +379,15 @@ class Jeu:
                         elif evenement.key == pygame.K_SPACE:
                             statut, coords = self.joueur.tenter_action(self.porte_selectionnee, self.manoir)
                             print(f"Reultat de l'action : {statut}, {coords}")
+
                             if statut == "MOUVEMENT_REUSSI":
-                                # La porte est ouverte et mène à une pièce connue
                                 self.joueur.deplacer_vers(coords[0], coords[1])
                                 piece = self.manoir.grille[coords[0]][coords[1]]
                                 if piece:
-                                    piece.on_enter(self.joueur)
+                                    messages = piece.on_enter(self.joueur)
+                                    if messages:
+                                        self.statut = ", ".join(messages) 
+                                        self.statut_timer = pygame.time.get_ticks()
                                 
                             elif statut == "DECOUVERTE":
                                 # Appelle au tirage
@@ -365,6 +411,7 @@ class Jeu:
                                 self.lancer_tirage_piece(coords, self.porte_selectionnee)
                             else:
                                 self.statut = 'DE_INSUFFISANT'
+                                self.statut_timer = pygame.time.get_ticks()
 
                             # A complter le Re-roll avec les dés
 
